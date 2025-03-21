@@ -1,0 +1,171 @@
+.main{
+  display: flex;
+  width: 100%;
+  height: auto;
+  border: 1px solid black;
+}
+.info{
+width: 50%;
+background-color: #1C4A2A;
+border: 1px solid black;
+padding: 8% 5% 0 5%;
+}
+.info h1{
+color: white;
+font-size: 3.7rem;
+font-weight: 500;
+padding-bottom: 2%;
+}
+.info p{
+color: #FFFFFFB2;
+font-size: 1.1rem;
+}
+.slotsBackground{
+width: 50%;
+border: 1px solid black;
+background-image: url('/booking.png');
+background-size: cover;
+display: flex;
+justify-content: center;
+align-items: center;
+height: auto;
+}
+.slots{
+width: 80%;
+height: auto;
+background-color: white;
+padding: 5% 5% 2% 5%;
+margin: 10% 0 10% 0;
+
+}
+.schedule{
+display: flex;
+justify-content: space-between;
+align-items: center;
+}
+.schedule p{
+font-size: 1.5rem;
+color: #221E20;
+}
+.schedule button{
+background-color:#1C4A2A ;
+color: white;
+padding: 2% 7%;
+border-radius: 10px;
+
+}
+.consult{
+display: flex;
+width: 100%;
+margin-top: 1.3rem;
+}
+.consult button{
+width: 50%;
+border-radius: 5px;
+padding: 2% 5% 2% 5%;
+}
+.bgGreen{
+background-color:#1C4A2A ;
+color: white;
+}
+.bgWhite{
+background-color:white ;
+color: black;
+}
+.hospitalList{
+width: 100%;
+margin-top: 1.3rem;
+padding: .7rem;
+border:  1px solid #D3D4DB;
+border-radius: 4px;
+}
+.availableSlots{
+width: 100%;
+border-radius: 10px;
+box-shadow: 0px 0px 10px gray;
+}
+.sunCountOfSlots{
+width: 100%;
+display: flex;
+justify-content: space-between;
+margin-top: 1.3rem;
+padding: 1rem 1rem 0 1rem;
+}
+.sunMorning{
+display: flex;
+}
+.sun,.sunset{
+width: 25px;
+height: 25px;
+background-image: url('/sun.png');
+margin-right: 1rem;
+}
+.sunset{
+background-image: url('/sunset.png');
+background-position: center;
+background-repeat: no-repeat;
+
+}
+.morning{
+font-weight: 600;
+}
+.countOfSlots{
+display: flex;
+justify-content: center;
+align-items: center;
+width: 5rem;
+height: 2rem;
+background-color: #FAF5FF;
+border-radius: 50px;
+}
+.horizontalLine{
+
+height: 0;
+width: 100%;
+margin-top: .3rem;
+border-bottom: 1px solid #70707026;
+}
+.availableSlotsContainer{
+width: 100%;
+padding: 1.5rem;
+display: flex;
+flex-wrap: wrap;
+justify-content: space-around;
+
+}
+.availableSlotsContainer button{
+width: 7rem;
+height: 2.5rem;
+border: 1px solid #F4D7D0;
+margin-bottom: 1rem;
+border-radius: 7px;
+font-weight: 500;
+padding: .3% .8% .1% .8%;
+font-size: 1rem;
+}
+.nextButton{
+width: 100%;
+margin-top: 1.3rem;
+background-color: #1C4A2A;
+height: 3rem;
+border-radius: 10px;
+color: white;
+font-size: 1rem;
+}
+.disabled{
+background-color: #DEDEDE;
+color: #9092A3;
+}
+@media screen and (max-width:750px){
+.main{
+   flex-wrap: wrap;
+}
+.info{
+   width: 100%;
+   padding-bottom: 2rem;
+
+}
+.slotsBackground{
+   width: 100%;
+}
+}

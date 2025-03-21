@@ -1,0 +1,21 @@
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2rem 3.5rem;
+  background-color: white;
+  border-top: 0.0625rem solid #ddd;
+  font-size: 0.875rem;
+  color: #333;
+}
+
+.icons {
+  display: flex;
+  gap: 1rem;
+}
+
+.icon {
+  font-size: 1.25rem;
+  color: #1C4A2A;
+  cursor: pointer;
+}

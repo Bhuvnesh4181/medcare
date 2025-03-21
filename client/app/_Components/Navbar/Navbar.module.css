@@ -1,0 +1,180 @@
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem 3.5rem;
+  background-color: #fff;
+  border-bottom: 0.0625rem solid #ddd;
+  align-items: center;
+  flex-shrink: 1;
+}
+
+.logo {
+  display: flex;
+  padding: 0.5rem;
+  gap: 0.5rem;
+  color: #1c4A2A;
+  font-size: 1.75rem;
+}
+
+.navLinks {
+  list-style: none;
+  display: flex;
+  gap: 1.25rem;
+  align-items: center;
+}
+
+.navLinks li {
+  font-size: 1.125rem;
+  color: #8C8C8C;
+}
+
+.navLinks a {
+  text-decoration: none;
+  color: #666;
+  font-weight: 500;
+}
+
+.navLinks a:hover {
+  color: #1f3b1f;
+}
+
+.loginBtn {
+  padding: 0.5rem 2rem;
+  border: 0.0625rem solid #E0E8E0;
+  background: white;
+  color: #1f3b1f;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-size: 1rem;
+}
+.loginBtn:hover {
+  background: #1c4A2A;
+  color: white;
+}
+.registerBtn {
+  padding: 0.5rem 2rem;
+  border: none;
+  background: #1c4A2A;
+  color: white;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-size: 1rem;
+}
+.registerBtn:hover {
+  background: #145214;
+}
+.buttons {
+  display: flex;
+  gap: 0.625rem;
+  height: 2.75rem;
+}
+.Links {
+  display: flex;
+  gap: 1.25rem;
+  align-self: center;
+}
+.RightNav {
+  display: flex;
+  align-items: center;
+  height: 3.5rem;
+}
+
+.hamburger {
+  display: none;
+  flex-direction: column;
+  cursor: pointer;
+}
+.line {
+  border: none;
+  height: 1px;
+  background-color: #ddd;
+  margin: 10px 0;
+}
+.hamburger div {
+  width: 32px;
+  height: 1.5px;
+  background: #1c4A2A;
+  margin: 5px 0;
+  transition: 0.3s;
+}
+
+.mobileMenu {
+  position: fixed;
+  top: 0;
+  right: -100%;
+  width: 80%;
+  height: 100vh;
+  background: white;
+  transition: right 0.3s ease-in-out;
+  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  padding-top: 1rem;
+  align-items: center;
+}
+
+.mobileMenu.open {
+  right: 0;
+}
+
+.mobileMenuContent {
+  text-align: center;
+}
+
+.mobileMenu h2 {
+  color: #1c4A2A;
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+.mobileMenu ul {
+  list-style: none;
+  padding: 0;
+}
+
+.mobileMenu ul li {
+  margin: 1rem 0;
+  font-size: 1.2rem;
+}
+
+.mobileMenu ul li a {
+  text-decoration: none;
+  color: #333;
+  font-weight: 500;
+}
+
+.mobileMenu ul li a:hover {
+  color: #145214;
+}
+
+.mobileMenu .loginBtn {
+  margin-top: 1.5rem;
+}
+.mobileMenu .registerBtn {
+ margin-top: 1.5rem;
+}
+.closeMenu {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 2rem;
+  cursor: pointer;
+  color: #333;
+}
+.btncon{
+  display: flex;
+  gap: 1rem;
+}
+@media screen and (max-width: 1024px) {
+  .navLinks,
+  .buttons {
+    display: none;
+  }
+  .hamburger {
+    display: flex;
+  }
+  .mobileMenu{
+    z-index: 1000;
+  }
+}
