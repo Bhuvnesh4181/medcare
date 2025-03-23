@@ -125,7 +125,7 @@ export default function Appointment() {
                                 return (
                                     <button
                                         onClick={() => handleSlotSelection(i)}
-                                        className={`{(i==slotSelectedE)?style.bgGreen:style.bgWhite} ${
+                                        className={`${(i==slotSelected)?style.bgGreen:style.bgWhite} ${
                                             data.isAvailable
                                                 ? ""
                                                 : style.disabled
@@ -154,7 +154,7 @@ export default function Appointment() {
                                 return (
                                     <button
                                         onClick={() => handleSlotSelectionE(i)}
-                                        className={`{(i==slotSelectedE)?style.bgGreen:style.bgWhite} ${
+                                        className={`${(i==slotSelectedE)?style.bgGreen:style.bgWhite} ${
                                             data.isAvailable
                                                 ? ""
                                                 : style.disabled
