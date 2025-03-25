@@ -5,29 +5,74 @@ import CardComp from "../Card/Card";
 import Search from "../SearchBar/Search";
 import styles from "./CardsGrid.module.css";
 
-const doctors = [
+const doctorsData = [
     {
         id: 1,
         name: "Dr. Jane Doe",
-        degree: "MBBS",
+        degree: "MBBS, MD",
         specialty: "Dentist",
         experience: "9 Years",
         rating: 4,
         image: "https://www.shutterstock.com/image-vector/male-doctor-smiling-happy-face-600nw-2481032615.jpg",
+        designation: "Senior Consultant, Dental Surgery",
+        hospital: "MediCare Dental Centre",
+        about: "Dr. Jane Doe is a highly experienced dental surgeon with expertise in cosmetic dentistry and oral surgery. She has successfully treated thousands of patients and is known for her gentle approach to dental care.",
+        education: [
+            "MBBS - Top Medical University (2005)",
+            "MD in Dental Surgery (2009)",
+            "Fellowship in Advanced Cosmetic Dentistry (2011)"
+        ],
+        awards: [
+            "Best Dental Surgeon Award 2019",
+            "Excellence in Patient Care 2020"
+        ],
+        publications: [
+            "Advanced Techniques in Cosmetic Dentistry - Journal of Dental Science 2018",
+            "Modern Approaches to Oral Surgery - Dental Research Quarterly 2020"
+        ],
+        languages: ["English", "Hindi", "Spanish"],
+        consultationFee: 2000,
+        availableSlots: {
+            morning: ["9:00 AM", "10:00 AM", "11:00 AM"],
+            evening: ["4:00 PM", "5:00 PM", "6:00 PM"]
+        },
+        nextAvailable: "Today"
     },
     {
         id: 2,
         name: "Dr. Sam Wilson",
-        degree: "BDS",
+        degree: "BDS, MDS",
         specialty: "Dentist",
         experience: "5 Years",
         rating: 5,
         image: "https://www.shutterstock.com/image-vector/male-doctor-smiling-happy-face-600nw-2481032615.jpg",
+        designation: "Consultant, Dental Surgery",
+        hospital: "MediCare Dental Centre",
+        about: "Dr. Sam Wilson specializes in preventive dentistry and oral health education. His patient-first approach and expertise in modern dental techniques have helped numerous patients achieve better oral health.",
+        education: [
+            "BDS - Premier Dental College (2015)",
+            "MDS in Conservative Dentistry (2018)"
+        ],
+        awards: [
+            "Young Dentist of the Year 2020",
+            "Best Research Paper in Preventive Dentistry 2019"
+        ],
+        publications: [
+            "Preventive Dentistry in Modern Practice - Dental Journal 2019",
+            "Patient Education in Dental Care - Oral Health Review 2021"
+        ],
+        languages: ["English", "Hindi"],
+        consultationFee: 1800,
+        availableSlots: {
+            morning: ["9:00 AM", "10:00 AM", "11:00 AM"],
+            evening: ["4:00 PM", "5:00 PM", "6:00 PM"]
+        },
+        nextAvailable: "Today"
     },
     {
         id: 3,
         name: "Dr. Pepper Potts",
-        degree: "BHMS",
+        degree: "BHMS, MD",
         specialty: "Dentist",
         experience: "5 Years",
         rating: 4,
@@ -36,7 +81,7 @@ const doctors = [
     {
         id: 4,
         name: "Dr. Bruce Banner",
-        degree: "MD",
+        degree: "MD, DM",
         specialty: "Neurologist",
         experience: "15 Years",
         rating: 5,
@@ -115,6 +160,8 @@ const doctors = [
         image: "https://via.placeholder.com/150",
     },
 ];
+
+export const doctors = doctorsData;
 
 export default function ShowCards() {
     const [filters, setFilters] = useState({

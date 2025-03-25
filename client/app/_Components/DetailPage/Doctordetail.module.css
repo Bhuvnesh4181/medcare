@@ -1,0 +1,207 @@
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.header {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+.doctorInfo {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.imageContainer {
+  flex-shrink: 0;
+}
+
+.doctorImage {
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.basicInfo {
+  flex-grow: 1;
+}
+
+.basicInfo h1 {
+  font-size: 2rem;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.designation {
+  color: #1C4A2A;
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+}
+
+.experience {
+  color: #666;
+  margin-bottom: 1rem;
+}
+
+.actionButton {
+  flex: 1;
+  padding: 1rem;
+  border: 2px solid #1C4A2A;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  
+  transition: all 0.3s ease;
+}
+.ratingContainer {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.hospital {
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.fee {
+  color: #1C4A2A;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.actions {
+  display: flex;
+  gap: 1rem;
+}
+.actionButton.active {
+  background-color: #1C4A2A;
+  color: white;
+}
+
+.actionButton:not(.active) {
+  background-color: white;
+  color: #1C4A2A;
+}
+
+.actionButton:hover:not(.active) {
+  background-color: #e8f5e9;
+}
+
+.content {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+}
+
+.tabs {
+  display: flex;
+  gap: 1rem;
+  border-bottom: 1px solid #e0e0e0;
+  margin-bottom: 2rem;
+}
+
+.tab {
+  padding: 1rem 2rem;
+  border: none;
+  background: none;
+  font-size: 1rem;
+  color: #666;
+  cursor: pointer;
+  position: relative;
+}
+
+.tab.activeTab {
+  color: #1C4A2A;
+  font-weight: 600;
+}
+
+.tab.activeTab::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: #1C4A2A;
+}
+
+.tabContent {
+  color: #333;
+}
+
+.aboutSection h2,
+.educationSection h2,
+.publicationsSection h2 {
+  color: #1C4A2A;
+  margin-bottom: 1rem;
+}
+
+.aboutSection p {
+  line-height: 1.6;
+  margin-bottom: 2rem;
+}
+
+.languages {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.language {
+  background-color: #e8f5e9;
+  color: #1C4A2A;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+}
+
+.educationList,
+.awardsList,
+.publicationsList {
+  list-style: none;
+  padding: 0;
+}
+
+.educationList li,
+.awardsList li,
+.publicationsList li {
+  padding: 1rem;
+  border-bottom: 1px solid #e0e0e0;
+  line-height: 1.4;
+}
+
+.educationList li:last-child,
+.awardsList li:last-child,
+.publicationsList li:last-child {
+  border-bottom: none;
+}
+
+@media (max-width: 768px) {
+  .actions {
+      flex-direction: column;
+  }
+
+  .tabs {
+      flex-wrap: wrap;
+  }
+  
+  .doctorInfo {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+  }
+
+  .tab {
+      flex: 1;
+      text-align: center;
+      padding: 0.8rem;
+  }
+}

@@ -1,11 +1,12 @@
 import styles from "./signup.module.css";
 import Image from "next/image";
+import Link from "next/link";
 export default function SignUpForm() {
     return (
         <div className={styles.signupContainer}>
             <h2>Sign Up</h2>
             <p>
-                Already a member? <a href="/login">Login.</a>
+                Already a member? <Link href="/login">Login.</Link>
             </p>
 
             {/* <label>Role</label>
@@ -33,15 +34,7 @@ export default function SignUpForm() {
                 </section>
             </div>
 
-            {/* <label>Phone</label>
-            <div className={styles.inputField}>
-                <section className={styles.inputcontainer}>
-                    <span>
-                    <Image src="/phone2.svg" alt="pass logo" height={20} width={20}></Image>
-                    </span>
-                    <input type="tel" placeholder="Enter your phone number"/>
-                </section>
-            </div> */}
+           
 
             <label>Email</label>
             <div className={styles.inputField}>
