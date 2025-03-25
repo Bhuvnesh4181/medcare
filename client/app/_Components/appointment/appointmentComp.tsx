@@ -4,73 +4,96 @@ import Calendar from "../Calender/showCalender";
 import style from "./booking.module.css";
 import { useState, useEffect } from "react";
 
-export default function Appointment() {
+interface Doctor {
+    id: number;
+    name: string;
+    degree: string;
+    specialty: string;
+    experience: string;
+    rating: number;
+    image: string;
+    designation?: string;
+    hospital?: string;
+    about?: string;
+    education?: string[];
+    nextAvailable?: string;
+}
+
+interface AppointmentProps {
+    doctor: Doctor;
+}
+
+export default function Appointment({ doctor }: AppointmentProps) {
     const [offileGreen, setOffineGreen] = useState(true);
     const [HospitalList, setHospitalList] = useState([
         "MediCareHeart Institute, Okhla Road",
     ]);
     const [slotsAvailable, setSlotsAvailable] = useState([
         { time: "9:00 AM", isAvailable: true },
-        { time: "9:00 AM", isAvailable: true },
-        { time: "9:00 AM", isAvailable: true },
-        { time: "9:00 AM", isAvailable: false },
-        { time: "9:00 AM", isAvailable: true },
-        { time: "9:00 AM", isAvailable: false },
-        { time: "9:00 AM", isAvailable: true },
-        { time: "9:00 AM", isAvailable: true },
+        { time: "10:00 AM", isAvailable: true },
+        { time: "11:00 AM", isAvailable: true },
+        { time: "11:30 AM", isAvailable: false },
+        { time: "12:00 PM", isAvailable: true },
+        { time: "12:30 PM", isAvailable: false },
+        { time: "1:00 PM", isAvailable: true },
+        { time: "1:30 PM", isAvailable: true },
     ]);
     const [slotsAvailableE, setSlotsAvailableE] = useState([
-        { time: "9:00 AM", isAvailable: true },
-        { time: "9:00 AM", isAvailable: false },
-        { time: "9:00 AM", isAvailable: true },
-        { time: "9:00 AM", isAvailable: true },
-        { time: "9:00 AM", isAvailable: true },
-        { time: "9:00 AM", isAvailable: false },
-        { time: "9:00 AM", isAvailable: true },
-        { time: "9:00 AM", isAvailable: false },
+        { time: "4:00 PM", isAvailable: true },
+        { time: "4:30 PM", isAvailable: false },
+        { time: "5:00 PM", isAvailable: true },
+        { time: "5:30 PM", isAvailable: true },
+        { time: "6:00 PM", isAvailable: true },
+        { time: "6:30 PM", isAvailable: false },
+        { time: "7:00 PM", isAvailable: true },
+        { time: "7:30 PM", isAvailable: false },
     ]);
     const [slotSelected, setSlotSelected] = useState(-1);
     const [slotSelectedE, setSlotSelectedE] = useState(-1);
-    const [modeSelected, setModeSelected] = useState(0);
     const [count, setCount] = useState(0);
     const [countE, setCountE] = useState(0);
+    const [modeSelected, setModeSelected] = useState(0);
+
     useEffect(() => {
         let temp = 0;
-
         slotsAvailable.forEach((data) => {
             if (data.isAvailable) temp++;
         });
-
         setCount(temp);
     }, []);
+
     useEffect(() => {
         let temp2 = 0;
         slotsAvailableE.forEach((data) => {
             if (data.isAvailable) temp2++;
         });
-
         setCountE(temp2);
     }, []);
-    function handleToggle(i: any) {
-        if (i == 1 && offileGreen) {
+
+    function handleToggle(i: number) {
+        if (i === 1 && offileGreen) {
             return;
-        } else if (i == 2 && !offileGreen) {
+        } else if (i === 2 && !offileGreen) {
             return;
         }
         setOffineGreen(!offileGreen);
         setModeSelected(i);
     }
-    function handleSlotSelection(i: any) {
+
+    function handleSlotSelection(i: number) {
         setSlotSelected(i);
-        if (slotSelectedE != -1) setSlotSelectedE(-1);
+        if (slotSelectedE !== -1) setSlotSelectedE(-1);
     }
-    function handleSlotSelectionE(i: any) {
+
+    function handleSlotSelectionE(i: number) {
         setSlotSelectedE(i);
-        if (slotSelected != -1) setSlotSelected(-1);
+        if (slotSelected !== -1) setSlotSelected(-1);
     }
+
     function handleNext() {
         //handleNext
     }
+
     return (
         <main className={style.main}>
             <div className={style.info}>
@@ -89,17 +112,13 @@ export default function Appointment() {
                     </div>
                     <div className={style.consult}>
                         <button
-                            className={
-                                offileGreen ? style.bgGreen : style.White
-                            }
+                            className={offileGreen ? style.bgGreen : style.White}
                             onClick={() => handleToggle(1)}
                         >
                             Book Video Consult
                         </button>
                         <button
-                            className={
-                                !offileGreen ? style.bgGreen : style.White
-                            }
+                            className={!offileGreen ? style.bgGreen : style.White}
                             onClick={() => handleToggle(2)}
                         >
                             Book Hospital Visit
@@ -121,21 +140,17 @@ export default function Appointment() {
                         </div>
                         <div className={style.horizontalLine}></div>
                         <div className={style.availableSlotsContainer}>
-                            {slotsAvailable.map((data, i) => {
-                                return (
-                                    <button
-                                        onClick={() => handleSlotSelection(i)}
-                                        className={`${(i==slotSelected)?style.bgGreen:style.bgWhite} ${
-                                            data.isAvailable
-                                                ? ""
-                                                : style.disabled
-                                        }`}
-                                        key={i}
-                                    >
-                                        {data.time}
-                                    </button>
-                                );
-                            })}
+                            {slotsAvailable.map((data, i) => (
+                                <button
+                                    key={i}
+                                    onClick={() => handleSlotSelection(i)}
+                                    className={`${i === slotSelected ? style.bgGreen : style.bgWhite} ${
+                                        !data.isAvailable ? style.disabled : ''
+                                    }`}
+                                >
+                                    {data.time}
+                                </button>
+                            ))}
                         </div>
                     </div>
                     <div className={style.availableSlots}>
@@ -150,26 +165,22 @@ export default function Appointment() {
                         </div>
                         <div className={style.horizontalLine}></div>
                         <div className={style.availableSlotsContainer}>
-                            {slotsAvailableE.map((data, i) => {
-                                return (
-                                    <button
-                                        onClick={() => handleSlotSelectionE(i)}
-                                        className={`${(i==slotSelectedE)?style.bgGreen:style.bgWhite} ${
-                                            data.isAvailable
-                                                ? ""
-                                                : style.disabled
-                                        }`}
-                                        key={i}
-                                    >
-                                        {data.time}
-                                    </button>
-                                );
-                            })}
+                            {slotsAvailableE.map((data, i) => (
+                                <button
+                                    key={i}
+                                    onClick={() => handleSlotSelectionE(i)}
+                                    className={`${i === slotSelectedE ? style.bgGreen : style.bgWhite} ${
+                                        !data.isAvailable ? style.disabled : ''
+                                    }`}
+                                >
+                                    {data.time}
+                                </button>
+                            ))}
                         </div>
                     </div>
                     <button
                         className={style.nextButton}
-                        onClick={() => handleNext}
+                        onClick={handleNext}
                     >
                         Next
                     </button>

@@ -7,7 +7,7 @@ const nextConfig: NextConfig = {
                 hostname: "via.placeholder.com",
             },
             {
-                hostname: "shutterstock.com",
+                hostname: "www.shutterstock.com",
             },
         ],
     },
