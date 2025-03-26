@@ -1,47 +1,61 @@
 const passport = require("passport");
 
 const LocalStrategy = require("passport-local").Strategy;
+const bcrypt = require("bcrypt");
 
-// const User = require('../models/user');
+const db = require("../config/db.js");
 
 // authentication using passport
 passport.use(
     new LocalStrategy(
         {
             usernameField: "email",
-            passReqToCallback: true,
         },
-        function (req, email, password, done) {
+        async function (email, password, done) {
             // find user and establish identity
-            // User.findOne({email: email}, (err, user) => {
-            //     if(err){
-            //         // req.flash('error', err);
-            //         return done(err);
-            //     }
-            //     if(!user || user.password != password){
-            //         req.flash('error', 'Invalid Username/Password');
-            //         return done(null, false);
-            //     }
-            //     return done(null, user);
-            // });
+            try {
+                // Fetch user from database
+                const user = await db.oneOrNone(
+                    "SELECT * FROM users WHERE user_emailid = $1",
+                    [email]
+                );
+
+                if (!user) {
+                    return done(null, false, { message: "Incorrect email." });
+                }
+
+                // Compare hashed password
+                const isMatch = await bcrypt.compare(password, user.password);
+                if (!isMatch) {
+                    return done(null, false, {
+                        message: "Incorrect password.",
+                    });
+                }
+
+                return done(null, user);
+            } catch (err) {
+                return done(err);
+            }
         }
     )
 );
 
 // serializing the user to decide which key is to be kept in cookies
 passport.serializeUser((user, done) => {
-    done(null, user.id);
+    done(null, user.user_id);
 });
 
 // deserializing the user from the key in the cookies
-passport.deserializeUser((id, done) => {
-    // User.findById(id, (err, user) => {
-    //     if(err){
-    //         console.log("Error in finding user ---> passport ---> deserializing");
-    //         done(err, false);
-    //     }
-    //     return done(null, user);
-    // })
+passport.deserializeUser(async (id, done) => {
+    try {
+        const user = await db.oneOrNone(
+            "SELECT * FROM users WHERE user_id = $1",
+            [id]
+        );
+        done(null, user);
+    } catch (err) {
+        done(err);
+    }
 });
 
 // check if user is authenticated

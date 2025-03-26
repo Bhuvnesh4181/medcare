@@ -2,63 +2,43 @@ import Image from "next/image";
 import styles from "./Card.module.css";
 import Link from "next/link";
 
-interface Doctor {
-    id: number;
-    name: string;
-    degree: string;
-    specialty: string;
-    rating: number;
-    image: string;
-    experience: string;
-}
-
-interface CardProps {
-    doctor: Doctor;
-}
-
-export default function CardComp({ doctor }: CardProps) {
+export default function CardComp(val: any) {
+    let e: any = val.doctor;
     return (
-        <div className={styles.card}>
-            <Link href={`/doctor/${doctor.id}`} className={styles.imageContainer}>
+        <div key={e.id} className={styles.card}>
+            <div className={styles.imageContainer}>
                 <Image
-                    src={doctor.image}
-                    alt={doctor.name}
+                    src={e.image}
+                    alt={e.name}
                     width={100}
                     height={100}
                     className={styles.profileImage}
                 />
-            </Link>
-            <Link href={`/doctor/${doctor.id}`} className={styles.name}>
-                {doctor.name}, {doctor.degree}
-            </Link>
+            </div>
+            <h2 className={styles.name}>
+                {e.name}, {e.degree}
+            </h2>
             <div className={styles.infoContainer}>
                 <Image
-                    src={"/Stethoscope.svg"}
+                    src={"./Stethoscope.svg"}
                     width={20}
                     height={20}
                     alt="Stethoscope"
                 />
-                <p className={styles.experience}>{doctor.specialty}</p>
+                <p className={styles.experience}>{e.specialty}</p>
                 <Image
-                    src={"/Hourglass.svg"}
+                    src={"./Hourglass.svg"}
                     width={20}
                     height={20}
                     alt="Hourglass"
                 />
-                <p className={styles.experience}>{doctor.experience}</p>
+                <p className={styles.experience}>{e.experience} years</p>
             </div>
             <div className={styles.ratingContainer}>
-                {Array.from({ length: 5 }, (_, index) => (
-                    <Image
-                        key={index}
-                        src={index < doctor.rating ? "/star.svg" : "/blankStar.svg"}
-                        alt="star"
-                        width={20}
-                        height={20}
-                    />
-                ))}
+                Rating: {e.rating}{" "}
+                <Image alt="star" width={20} height={20} src={"/star.svg"} />
             </div>
-            <Link href={`/bookingpage/${doctor.id}`} className={styles.bookButton}>
+            <Link href={"/bookingpage"} className={styles.bookButton}>
                 Book Appointment
             </Link>
         </div>

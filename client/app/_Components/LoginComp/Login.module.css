@@ -1,5 +1,5 @@
 .login {
-    background-image: url('/LoginHero.png');
+    background-image: url("/LoginHero.png");
     background-size: cover;
     height: 100vh;
     display: flex;
@@ -14,31 +14,31 @@
     border-radius: 10px;
     backdrop-filter: blur(16px);
     width: 29rem;
-    height: 32rem;
+    height: 38rem;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.loginContainer label{
+.loginContainer label {
     color: grey;
 }
 
-.loginContainer h2{
+.loginContainer h2 {
     font-size: 2rem;
     font-weight: 300;
 }
 
-.loginContainer p{
+.loginContainer p {
     color: grey;
     font-size: 0.8rem;
 }
-.loginContainer a{
-    color: #1C4A2A;
+.loginContainer a {
+    color: #1c4a2a;
     font-weight: 600;
 }
-.inputField{
+.inputField {
     width: 100%;
     padding: 1rem;
-    margin:0.625rem 0;
+    margin: 0.625rem 0;
     border-radius: 5px;
     background-color: white;
 }
@@ -61,14 +61,33 @@
     color: white;
 }
 
-.forgot{
+.forgot {
     text-align: center;
 }
-.inputcontainer{
+.inputcontainer {
     display: flex;
     gap: 10px;
 }
 
-input:focus{
+input:focus {
     outline: none;
+}
+
+.divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 20px 0;
+    color: #666;
+}
+
+.divider::before,
+.divider::after {
+    content: "";
+    flex: 1;
+    border-bottom: 1px solid #ddd;
+}
+
+.divider span {
+    padding: 0 10px;
 }

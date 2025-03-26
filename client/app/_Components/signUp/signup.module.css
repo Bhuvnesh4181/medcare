@@ -1,11 +1,11 @@
 .signup {
-    background-image: url('/LoginHero.png');
+    background-image: url("/LoginHero.png");
     background-size: cover;
     height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 20px; 
+    padding: 20px;
 }
 
 .signupContainer {
@@ -13,8 +13,9 @@
     padding: 3rem;
     border-radius: 10px;
     backdrop-filter: blur(16px);
-    width: 30rem; 
+    width: 30rem;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    height: 39rem;
 }
 
 .signupContainer label {
@@ -36,7 +37,7 @@
 }
 
 .signupContainer a {
-    color: #1C4A2A;
+    color: #1c4a2a;
     font-weight: 600;
 }
 
@@ -70,10 +71,28 @@
     color: white;
     border: none;
 }
-input:focus{
+input:focus {
     outline: none;
 }
-.inputcontainer{
+.inputcontainer {
     display: flex;
     gap: 10px;
+}
+.divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 20px 0;
+    color: #666;
+}
+
+.divider::before,
+.divider::after {
+    content: "";
+    flex: 1;
+    border-bottom: 1px solid #ddd;
+}
+
+.divider span {
+    padding: 0 10px;
 }

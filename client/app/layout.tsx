@@ -2,6 +2,7 @@ import { Montserrat } from "next/font/google";
 import Navbar from "./_Components/Navbar/Navbar";
 import "./globals.css";
 import { Metadata } from "next";
+import { LoginProvider } from "@/providers/loginProvider";
 
 const montserrat = Montserrat({
     subsets: ["latin"],
@@ -22,9 +23,10 @@ export default function RootLayout({
     return (
         <html lang="en" className={montserrat.variable}>
             <body>
-                <Navbar />
-                {children}
-                {/* <Footer/> */}
+                <LoginProvider>
+                    <Navbar />
+                    {children}
+                </LoginProvider>
             </body>
         </html>
     );

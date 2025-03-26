@@ -1,43 +1,68 @@
 const passport = require("passport");
-const googleStrategy = require("passport-google-oauth").OAuth2Strategy;
-const crypto = require("crypto");
-// const User = require('../models/user');
-const env = require("./environment");
+const GoogleStrategy = require("passport-google-oauth20").Strategy;
+const bcrypt = require("bcrypt");
+const db = require("./db.js");
 
-let opts = {
-    clientID: env.google_client_id,
-    clientSecret: env.google_client_Secret,
-    callbackURL: env.google_callback_URL,
-};
+// Debug: Log environment variables
+
 
 passport.use(
-    new googleStrategy(opts, (accessToken, refreshToken, profile, done) => {
-        // emails is array of emails of user on google and value is the actual email id
-        // User.findOne({email: profile.emails[0].value}).exec((err, user) => {
-        //     if(err){
-        //         console.log("Error in Google OAuth....", err);
-        //         return done(err, false);
-        //     }
-        //     if(user){
-        //         // if found set this user as req.user
-        //         return done(null, user);
-        //     }else{
-        //         // if not found, create this user and set as req.user
-        //         User.create({
-        //             name: profile.displayName,
-        //             email: profile.emails[0].value,
-        //             password: crypto.randomBytes(20).toString('hex')
-        //         },
-        //         (err, user) => {
-        //             if(err){
-        //                 console.log("Error in creating user in Google OAuth....", err);
-        //                 return done(err, false);
-        //             }
-        //             return done(null, user);
-        //         });
-        //     }
-        // });
-    })
+    new GoogleStrategy(
+        {
+            clientID: process.env.GOOGLE_CLIENT_ID,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+            callbackURL: process.env.GOOGLE_CALLBACK_URL,
+        },
+        async (accessToken, refreshToken, profile, done) => {
+            try {
+                // Check if user exists
+                let user = await db.oneOrNone(
+                    "SELECT * FROM users WHERE user_emailid = $1",
+                    [profile.emails[0].value]
+                );
+
+                if (!user) {
+                    // Create new user if doesn't exist
+                    const query = `
+                        INSERT INTO users(user_name, user_emailid, password)
+                        VALUES($1, $2, $3)
+                        RETURNING user_name, user_emailid, user_id;
+                    `;
+
+                    const result = await db.query(query, [
+                        profile.displayName,
+                        profile.emails[0].value,
+                        'google-oauth' // placeholder password for Google users
+                    ]);
+
+                    user = result[0];
+                }
+
+                return done(null, user);
+            } catch (err) {
+                console.error("Google OAuth Error:", err);
+                return done(err, null);
+            }
+        }
+    )
 );
+
+// Serialize user for the session
+passport.serializeUser((user, done) => {
+    done(null, user.user_id);
+});
+
+// Deserialize user from the session
+passport.deserializeUser(async (id, done) => {
+    try {
+        const user = await db.oneOrNone(
+            "SELECT * FROM users WHERE user_id = $1",
+            [id]
+        );
+        done(null, user);
+    } catch (err) {
+        done(err, null);
+    }
+});
 
 module.exports = passport;
