@@ -26,20 +26,106 @@ interface DoctorsResponse {
 export default function ShowCards() {
     const [filters, setFilters] = useState({
         rating: "any",
-        experience: "15+",
+        experience: "any",
         gender: "any",
     });
+
+
+     // Map experience string values to integer values for the backend
+     const experienceToIntMap: Record<string, number> = {
+        "15+": 15,
+        "10-15": 10,
+        "5-10": 5,
+        "3-5": 3,
+        "1-3": 1,
+        "0-1": 0,
+    };
 
     const [doctors, setDoctors] = useState<Doctor[]>([]);
     const [totalDoctors, setTotalDoctors] = useState(0);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [currentPage, setCurrentPage] = useState(1);
+    const [isResetting, setIsResetting] = useState(false);
     const itemsPerPage = 6;
 
     useEffect(() => {
-        fetchDoctors();
-    }, [currentPage]);
+        if (!isResetting) {
+            fetchDoctors();
+        }
+    }, [currentPage, isResetting]);
+
+    const handleFilters = async () => {
+        try {
+            setLoading(true);
+            setError(null);
+
+            // Build query params based on selected filters
+            const queryParams = new URLSearchParams();
+
+            // Only add rating filter if not "any"
+            if (filters.rating !== "any") {
+                queryParams.append("rating", filters.rating);
+            }
+
+            // Get the integer value for experience
+            if (filters.experience !== "any") {
+                const expValue = experienceToIntMap[filters.experience];
+                queryParams.append("experience", expValue.toString());
+            }
+
+            // Only add gender filter if not "any"
+            if (filters.gender !== "any") {
+                queryParams.append("gender", filters.gender);
+            }
+
+            // Only make the API call if there are query parameters
+            if (queryParams.toString()) {
+                const response = await fetch(
+                    `http://localhost:3001/api/doctors/filter?${queryParams.toString()}`
+                );
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(
+                        errorData.message ||
+                            `HTTP error! status: ${response.status}`
+                    );
+                }
+
+                const data: DoctorsResponse = await response.json();
+
+                if (!data.ok) {
+                    throw new Error(
+                        data.message || "Failed to fetch filtered doctors"
+                    );
+                }
+
+                if (!data.data?.rows) {
+                    throw new Error("Invalid data format received from server");
+                }
+
+                setDoctors(data.data.rows);
+                setTotalDoctors(data.data.total || 0);
+            } else {
+                // If no filters are applied, fetch all doctors
+                await fetchDoctors();
+            }
+
+            setCurrentPage(1); // Reset to first page when filters are applied
+        } catch (err) {
+            console.error("Error fetching filtered doctors:", err);
+            setError(
+                err instanceof Error
+                    ? err.message
+                    : "An error occurred while filtering doctors"
+            );
+            setDoctors([]);
+            setTotalDoctors(0);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const fetchDoctors = async () => {
         try {
@@ -91,13 +177,30 @@ export default function ShowCards() {
         }
     };
 
-    const resetFilters = () => {
+    const resetFilters = async () => {
+        setIsResetting(true);
         setFilters({
             rating: "any",
-            experience: "15+",
+            experience: "any",
             gender: "any",
         });
         setCurrentPage(1);
+         // Fetch all doctors after resetting filters
+         try {
+            setLoading(true);
+            setError(null);
+            await fetchDoctors();
+        } catch (err) {
+            console.error("Error fetching doctors after reset:", err);
+            setError(
+                err instanceof Error
+                    ? err.message
+                    : "An error occurred while fetching doctors"
+            );
+        } finally {
+            setLoading(false);
+            setIsResetting(false);
+        }
     };
 
     const handleFilterChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -233,6 +336,16 @@ export default function ShowCards() {
                     <div className={styles.filterSection}>
                         <h4 className={styles.filterTitle}>Experience</h4>
                         <div className={styles.filterOptions}>
+                        <label className={styles.filterOption}>
+                                 <input
+                                     type="radio"
+                                     name="experience"
+                                     value="any"
+                                     checked={filters.experience === "any"}
+                                     onChange={handleFilterChange}
+                                 />
+                                 <span>Any</span>
+                             </label>
                             <label className={styles.filterOption}>
                                 <input
                                     type="radio"
@@ -331,7 +444,9 @@ export default function ShowCards() {
                             </label>
                         </div>
                     </div>
-                    <button className={styles.applyBtn}>Apply Filters</button>
+                    <button onClick={handleFilters} className={styles.applyBtn}>
+                         Apply Filters
+                     </button>
                 </div>
 
                 <div className={styles.gridContainer}>
