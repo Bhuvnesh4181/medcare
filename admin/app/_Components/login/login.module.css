@@ -1,0 +1,78 @@
+.login {
+    background-image: url('/LoginHero.png');
+    background-size: cover;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: auto;
+}
+
+.loginContainer {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 2rem;
+    border-radius: 10px;
+    backdrop-filter: blur(16px);
+    width: 29rem;
+    height: 25rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.loginContainer label{
+    color: grey;
+}
+
+.loginContainer h2{
+    font-size: 2rem;
+    font-weight: 300;
+}
+
+.loginContainer p{
+    color: grey;
+    font-size: 0.8rem;
+}
+.loginContainer a{
+    color: #1C4A2A;
+    font-weight: 600;
+}
+.inputField{
+    width: 100%;
+    padding: 1rem;
+    margin:0.625rem 0;
+    border-radius: 5px;
+    background-color: white;
+}
+
+.button {
+    width: 100%;
+    padding: 0.625rem;
+    margin-top: 0.625rem;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.loginButton {
+    background-color: #0b4b2f;
+    color: white;
+}
+
+.resetButton {
+    background-color: #c0a080;
+    color: white;
+}
+
+.forgot{
+    text-align: center;
+}
+.inputcontainer{
+    display: flex;
+    gap: 10px;
+}
+.inputcontainer input{
+    border: none;
+}
+
+.input:focus{
+    outline: none;
+}
+  

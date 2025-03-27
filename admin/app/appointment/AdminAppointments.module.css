@@ -1,0 +1,80 @@
+.container {
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 1.5rem;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+  
+  .title {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    color: #1f3b2d; /* Dark green */
+  }
+  
+  .appointmentList {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .appointmentCard {
+    background: #f3f4f6;
+    padding: 1rem;
+    border-radius: 6px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .info p {
+    margin: 5px 0;
+    font-size: 1rem;
+  }
+  
+  .approved {
+    color: green;
+    font-weight: bold;
+  }
+  
+  .pending {
+    color: orange;
+    font-weight: bold;
+  }
+  
+  .actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+  
+  .approveButton {
+    background: #1f3b2d;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .approveButton:hover {
+    background: #163025;
+  }
+  
+  .deleteButton {
+    background: #b08968;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .deleteButton:hover {
+    background: #8d6e5c;
+  }
+  
+  
