@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { createContext, useContext, useState, useEffect } from "react";
 
 interface User {
@@ -23,6 +24,8 @@ export const LoginProvider = ({ children }: { children: React.ReactNode }) => {
     const [user, setUser] = useState<User | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
+    const router = useRouter();
+
     const fetchUser = async () => {
         try {
             const res = await fetch(
@@ -39,7 +42,6 @@ export const LoginProvider = ({ children }: { children: React.ReactNode }) => {
 
             if (res.ok) {
                 const userData = await res.json();
-                console.log("Fetched user data:", userData);
                 setUser(userData);
             } else {
                 console.log("Not authenticated, clearing user state");
@@ -60,6 +62,7 @@ export const LoginProvider = ({ children }: { children: React.ReactNode }) => {
                 credentials: "include",
             });
             setUser(null);
+            router.push("/");
         } catch (error) {
             console.error("Logout failed", error);
         }

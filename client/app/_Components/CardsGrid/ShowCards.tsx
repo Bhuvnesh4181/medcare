@@ -5,7 +5,7 @@ import CardComp from "../Card/Card";
 import Search from "../SearchBar/Search";
 import styles from "./CardsGrid.module.css";
 
-interface Doctor {
+export interface Doctor {
     id: number;
     name: string;
     specialty: string;
@@ -540,11 +540,12 @@ export default function ShowCards() {
                         {doctors.map((doctor) => (
                             <CardComp
                                 key={doctor.id}
-                                doctor={{
-                                    ...doctor,
-                                    image: doctor.profile_pic,
-                                    degree: doctor.specialty,
-                                }}
+                                experience={doctor.experience}
+                                id={doctor.id}
+                                name={doctor.name}
+                                profile_pic={doctor.profile_pic}
+                                rating={doctor.rating}
+                                specialty={doctor.specialty}
                             />
                         ))}
                     </div>

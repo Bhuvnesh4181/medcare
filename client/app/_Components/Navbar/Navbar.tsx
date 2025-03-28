@@ -13,7 +13,6 @@ export default function Navbar() {
 
     // Force re-fetch user data when the component mounts
     useEffect(() => {
-        console.log("Navbar mounted, current user:", user);
         fetchUser();
     }, []);
 

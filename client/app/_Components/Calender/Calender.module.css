@@ -103,3 +103,10 @@
 .day {
     font-size: 0.75rem;
 }
+
+.disabledDate {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: #f0f0f0;
+    color: #999;
+}
