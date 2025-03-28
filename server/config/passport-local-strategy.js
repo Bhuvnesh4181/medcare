@@ -66,7 +66,7 @@ passport.checkAuthentication = function (req, res, next) {
     }
 
     // if the user is not signed in
-    return res.redirect("/login");
+    return res.redirect("https://localhost:3000/login");
 };
 
 module.exports = passport;
