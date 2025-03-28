@@ -7,6 +7,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useLogin } from "@/providers/loginProvider";
 import GoogleSignInButton from "../GoogleSignInButton/GoogleSignInButton";
+import { toast } from "sonner";
 
 export default function SignUpForm() {
     const [name, setName] = useState("");
@@ -20,7 +21,7 @@ export default function SignUpForm() {
     const handleRegister = async (e?: React.FormEvent) => {
         if (e) e.preventDefault();
         if (!name || !email || !password) {
-            alert("Please fill in all fields");
+            toast.error("Please fill in all fields");
             return;
         }
 
@@ -37,10 +38,6 @@ export default function SignUpForm() {
 
             const data = await response.json();
             if (data.ok) {
-                console.log("Registration successful", data);
-                // Check structure of user data
-                console.log("User data structure:", data.user);
-
                 // For direct login after registration, let's also make a login request
                 try {
                     const loginResponse = await fetch("/api/users/login", {
@@ -53,35 +50,28 @@ export default function SignUpForm() {
                     });
 
                     const loginData = await loginResponse.json();
-                    console.log(
-                        "Login response after registration:",
-                        loginData
-                    );
 
                     if (loginData.ok) {
                         // Set user explicitly from login response
                         setUser(loginData.user);
                         await fetchUser();
-                        alert("Registration and login successful!");
+                        toast.success("Registration and login successful!");
                         router.replace("/");
                     } else {
-                        console.error("Auto-login failed:", loginData);
-                        alert(
+                        toast.error(
                             "Registration successful but login failed. Please login manually."
                         );
                         router.replace("/login");
                     }
                 } catch (loginError) {
-                    console.error("Auto-login error:", loginError);
-                    alert("Registration successful! Please login.");
+                    toast.error("Registration successful! Please login.");
                     router.replace("/login");
                 }
             } else {
-                alert(`Error: ${data.message || "Registration failed"}`);
+                toast.error(data.message || "Registration failed");
             }
         } catch (error) {
-            console.error("Registration error:", error);
-            alert("An error occurred while registering.");
+            toast.error("An error occurred while registering.");
         } finally {
             setIsLoading(false);
         }
@@ -91,6 +81,7 @@ export default function SignUpForm() {
         setName("");
         setEmail("");
         setPassword("");
+        toast.info("Form reset");
     };
 
     const handleGoogleSignIn = () => {

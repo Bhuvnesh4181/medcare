@@ -11,7 +11,6 @@ export default function Navbar() {
     const [menuOpen, setMenuOpen] = useState(false);
     const { user, logout, fetchUser } = useLogin();
 
-    // Force re-fetch user data when the component mounts
     useEffect(() => {
         fetchUser();
     }, []);
@@ -52,8 +51,7 @@ export default function Navbar() {
                             }}
                             href="/help"
                         >
-                            <FaAmbulance />
-                            Help
+                            <FaAmbulance size={30} />
                         </Link>
                     </li>
                 </ul>

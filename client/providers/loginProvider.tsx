@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { createContext, useContext, useState, useEffect } from "react";
+import { toast } from "sonner";
 
 interface User {
     user_name: string;
@@ -62,9 +63,10 @@ export const LoginProvider = ({ children }: { children: React.ReactNode }) => {
                 credentials: "include",
             });
             setUser(null);
+            toast.success("Logged out successfully");
             router.push("/");
         } catch (error) {
-            console.error("Logout failed", error);
+            toast.error("Logout failed. Please try again.");
         }
     };
 

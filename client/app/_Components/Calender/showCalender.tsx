@@ -5,7 +5,7 @@ interface CalendarProps {
     onDateSelect: (date: string) => void;
 }
 
-const Calendar: React.FC<CalendarProps> = ({ onDateSelect }) => {
+const Calendar = ({ onDateSelect }: CalendarProps) => {
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [offset, setOffset] = useState(0);
     const [minDate, setMinDate] = useState(new Date());

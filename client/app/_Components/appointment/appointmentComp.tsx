@@ -3,20 +3,18 @@
 import Calendar from "../Calender/showCalender";
 import style from "./booking.module.css";
 import { useState, useEffect } from "react";
+import { formatTime } from "@/utils/formatTime";
+import { validateSlots } from "@/utils/validateSlots";
+import { toast } from "sonner";
 
-// API base URL configuration
-const API_BASE_URL = "http://localhost:3001/api"; // Updated port to match backend
+const API_BASE_URL = "http://localhost:3001/api";
 
-interface Slot {
+export interface Slot {
     id: number;
     doctor_id: number;
     slot_time: string;
     slot_type: "morning" | "evening";
     is_available: boolean;
-}
-
-interface CalendarProps {
-    onDateSelect: (date: string) => void;
 }
 
 interface AppointmentProps {
@@ -44,38 +42,12 @@ export default function Appointment({ doctorId }: AppointmentProps) {
         }
     }, [selectedDate, doctorId]);
 
-    // Add this function to check if a slot is in the past
-    const isSlotInPast = (slotTime: string, slotDate: string): boolean => {
-        const now = new Date();
-        const today = now.toISOString().split("T")[0];
-
-        // If the selected date is before today, all slots are in the past
-        if (slotDate < today) {
-            return true;
-        }
-
-        // If it's today, check if the slot time is in the past
-        if (slotDate === today) {
-            // Parse the slot time
-            const [hours, minutes] = slotTime.split(":").map(Number);
-            const slotDateTime = new Date();
-            slotDateTime.setHours(hours, minutes, 0, 0);
-
-            // If the slot time is earlier than current time, it's in the past
-            return slotDateTime < now;
-        }
-
-        // Future date, slot is not in the past
-        return false;
-    };
-
-    // Modify the fetchAvailableSlots function to mark past slots as unavailable
+    // fetch available slots and validate them
     const fetchAvailableSlots = async () => {
         try {
             setLoading(true);
             setError(null);
 
-            // Using fetch without credentials for testing
             const response = await fetch(
                 `${API_BASE_URL}/appointments/available-slots/${doctorId}/${selectedDate}`,
                 {
@@ -94,29 +66,16 @@ export default function Appointment({ doctorId }: AppointmentProps) {
             const data = await response.json();
 
             // Ensure all slot data has the required fields and mark past slots as unavailable
-            const validatedSlots = data.map((slot: any) => {
-                const isPastSlot = isSlotInPast(slot.slot_time, selectedDate);
-                return {
-                    ...slot,
-                    id: slot.id,
-                    doctor_id: slot.doctor_id,
-                    slot_time: slot.slot_time,
-                    slot_type: slot.slot_type || "morning", // Default to morning if missing
-                    is_available: isPastSlot
-                        ? false
-                        : typeof slot.is_available === "boolean"
-                        ? slot.is_available
-                        : true,
-                };
-            });
+            const validatedSlots = validateSlots(data, selectedDate);
 
             setSlots(validatedSlots);
         } catch (err) {
-            setError(
+            const errorMessage =
                 err instanceof Error
                     ? err.message
-                    : "Failed to load available slots"
-            );
+                    : "Failed to load available slots";
+            setError(errorMessage);
+            toast.error(errorMessage);
         } finally {
             setLoading(false);
         }
@@ -124,7 +83,9 @@ export default function Appointment({ doctorId }: AppointmentProps) {
 
     const handleBookAppointment = async () => {
         if (!selectedSlotId) {
-            setError("Please select a time slot");
+            const errorMessage = "Please select a time slot";
+            setError(errorMessage);
+            toast.error(errorMessage);
             return;
         }
 
@@ -154,47 +115,27 @@ export default function Appointment({ doctorId }: AppointmentProps) {
             // Reset selection and refresh slots
             setSelectedSlotId(null);
             fetchAvailableSlots();
+
+            // Show success toast
+            toast.success("Appointment booked successfully!");
         } catch (err) {
-            setError(
+            const errorMessage =
                 err instanceof Error
                     ? err.message
-                    : "Failed to book appointment"
-            );
+                    : "Failed to book appointment";
+            setError(errorMessage);
+            toast.error(errorMessage);
         } finally {
             setLoading(false);
         }
     };
 
-    // Improved slot filtering with better logging
     const morningSlots = slots.filter((slot) => slot.slot_type === "morning");
     const eveningSlots = slots.filter((slot) => slot.slot_type === "evening");
 
     function handleToggle(type: "online" | "offline") {
         setAppointmentType(type);
         setOfflineGreen(type === "online");
-    }
-
-    function formatTime(timeStr: string): string {
-        try {
-            // Check if timeStr is already a time string (HH:MM:SS)
-            if (timeStr.match(/^\d{2}:\d{2}(:\d{2})?$/)) {
-                // It's already in HH:MM format, just format for display
-                const [hours, minutes] = timeStr.split(":");
-                const hour = parseInt(hours, 10);
-                const ampm = hour >= 12 ? "PM" : "AM";
-                const hour12 = hour % 12 || 12;
-                return `${hour12}:${minutes} ${ampm}`;
-            }
-
-            // Otherwise, treat as a full date string
-            return new Date(timeStr).toLocaleTimeString("en-US", {
-                hour: "numeric",
-                minute: "2-digit",
-                hour12: true,
-            });
-        } catch (error) {
-            return timeStr; // Return original if parsing fails
-        }
     }
 
     return (

@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useLogin } from "@/providers/loginProvider";
+import { toast } from "sonner";
 
 export default function GoogleCallback() {
     const router = useRouter();
@@ -25,14 +26,15 @@ export default function GoogleCallback() {
 
                 const data = await response.json();
                 if (data) {
-                    // Set user data and redirect to home
                     setUser(data);
+                    toast.success("Google sign-in successful! Welcome back!");
                     router.push("/");
                 } else {
                     throw new Error("No user data received");
                 }
             } catch (error) {
                 console.error("Google callback error:", error);
+                toast.error("Google sign-in failed. Please try again.");
                 router.push("/login");
             }
         };
