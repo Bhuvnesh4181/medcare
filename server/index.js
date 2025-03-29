@@ -1,48 +1,53 @@
-require('dotenv').config();
+require("dotenv").config();
 
 const express = require("express");
-const passport = require("passport");
-const passport_google = require("./config/passport-google-oauth.js");
-const passport_local = require("./config/passport-local-strategy.js");
 const cors = require("cors");
+const passport = require("passport");
+const session = require("express-session");
+
+require("./config/passport-google-oauth");
+require("./config/passport-local-strategy");
+
+const indexRouter = require("./routes/index");
+
 const app = express();
 const port = process.env.PORT || 3001;
 
+// CORS Configuration
 app.use(
     cors({
-        origin: "http://localhost:3000", // Allow requests from Next.js
+        origin: "http://localhost:3000", // Allow requests from frontend
         credentials: true, // Allow cookies/sessions
-        methods: "GET,POST,PUT,DELETE", // Allow specific HTTP methods
-        allowedHeaders: "Content-Type,Authorization", // Allow specific headers
+        methods: ["GET", "POST", "PUT", "DELETE"],
+        allowedHeaders: ["Content-Type", "Authorization"],
     })
 );
-app.use(express.urlencoded({ extended: false }));
-app.use(express.json());
 
+// Middleware for parsing requests
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+
+// Express Session Configuration
 app.use(
-    require("express-session")({
-        secret: "medcare-app-key",
+    session({
+        secret: process.env.SESSION_SECRET || "medcare-app-key",
         resave: false,
         saveUninitialized: false,
         cookie: {
             httpOnly: true,
-            secure: false,
-            maxAge: 7 * 24 * 60 * 60 * 1000,
+            secure: false, // Set to true in production (requires HTTPS)
+            maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
         },
     })
 );
+
+// Initialize Passport for authentication
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.get("/", (req, res) => {
-    res.send("Hello world");
-});
-
-const indexRouter = require("./routes/index");
+// Routes
+app.get("/", (req, res) => res.send("Hello World!"));
 app.use("/api", indexRouter);
 
-app.listen(port, (err) => {
-    if (err) console.log("Error:", err);
-
-    console.log("Server is running on port:", port);
-});
+// Start Server
+app.listen(port, () => console.log(`🚀 Server running on port: ${port}`));

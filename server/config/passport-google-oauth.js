@@ -1,11 +1,10 @@
+
+
 const passport = require("passport");
-const GoogleStrategy = require("passport-google-oauth20").Strategy;
-const bcrypt = require("bcrypt");
+const { Strategy: GoogleStrategy } = require("passport-google-oauth20");
 const db = require("./db.js");
 
-// Debug: Log environment variables
-
-
+// Google OAuth Strategy
 passport.use(
     new GoogleStrategy(
         {
@@ -15,53 +14,50 @@ passport.use(
         },
         async (accessToken, refreshToken, profile, done) => {
             try {
-                // Check if user exists
-                let user = await db.oneOrNone(
-                    "SELECT * FROM users WHERE user_emailid = $1",
-                    [profile.emails[0].value]
-                );
+                const email = profile.emails?.[0]?.value;
+                const name = profile.displayName;
+
+                if (!email) {
+                    return done(new Error("Google profile does not have an email"), null);
+                }
+
+                // Check if user already exists
+                let user = await db.oneOrNone("SELECT * FROM users WHERE user_emailid = $1", [email]);
 
                 if (!user) {
-                    // Create new user if doesn't exist
+                    // Insert new user if not found
                     const query = `
                         INSERT INTO users(user_name, user_emailid, password)
                         VALUES($1, $2, $3)
-                        RETURNING user_name, user_emailid, user_id;
+                        RETURNING user_id, user_name, user_emailid;
                     `;
 
-                    const result = await db.query(query, [
-                        profile.displayName,
-                        profile.emails[0].value,
-                        'google-oauth' // placeholder password for Google users
-                    ]);
-
-                    user = result[0];
+                    const newUser = await db.one(query, [name, email, "google-oauth"]);
+                    user = newUser;
                 }
 
                 return done(null, user);
-            } catch (err) {
-                console.error("Google OAuth Error:", err);
-                return done(err, null);
+            } catch (error) {
+                console.error("🔥 Google OAuth Error:", error);
+                return done(error, null);
             }
         }
     )
 );
 
-// Serialize user for the session
+// Serialize user (store user_id in session)
 passport.serializeUser((user, done) => {
     done(null, user.user_id);
 });
 
-// Deserialize user from the session
+// Deserialize user (retrieve user from database)
 passport.deserializeUser(async (id, done) => {
     try {
-        const user = await db.oneOrNone(
-            "SELECT * FROM users WHERE user_id = $1",
-            [id]
-        );
+        const user = await db.oneOrNone("SELECT * FROM users WHERE user_id = $1", [id]);
         done(null, user);
-    } catch (err) {
-        done(err, null);
+    } catch (error) {
+        console.error("🔥 Error in deserializing user:", error);
+        done(error, null);
     }
 });
 
