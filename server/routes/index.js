@@ -1,13 +1,15 @@
 
-const express = require("express");
 
+//------
+const express = require("express");
 const router = express.Router();
 
-// Define route mappings in an object for better scalability
+// Import all routes
 const routes = {
     users: require("./usersRouter"),
     doctors: require("./doctorsRouter"),
     appointments: require("./appointmentsRouter"),
+    admin: require("./adminRouter"),  // Consolidated admin routes
 };
 
 // Dynamically register routes

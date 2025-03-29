@@ -51,7 +51,7 @@ export default function LoginForm() {
                     <Image src="/lockPass.svg" alt="pass logo" height={20} width={20}></Image>
                     </span>
                     <input type="password" placeholder="********" value={password} 
-                            onChange={(e) => setPassword(e.target.value)} className={styles.input} / >
+                            onChange={(e) => setPassword(e.target.value)} className={styles.input} />
                 </section>
             </div>
 

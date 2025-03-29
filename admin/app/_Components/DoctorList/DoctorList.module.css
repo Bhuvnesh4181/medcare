@@ -1,75 +1,365 @@
+.container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.title {
+  text-align: center;
+  color: #2c5282;
+  margin-bottom: 20px;
+}
+
 .doctorList {
-    list-style: none;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .doctorItem {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background: white;
-    padding: 15px;
-    border-radius: 8px;
-    margin-bottom: 10px;
-    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-    width: 60%;
-    text-align: center;
-  }
-  
-  .doctorDetails {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 5px;
-  }
-  
-  .doctorText {
-    margin: 5px 0;
-  }
-  
-  .editForm {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    align-items: center;
-  }
-  
-  .inputField {
-    padding: 6px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    width: 80%;
-  }
-  
-  .saveBtn,
-  .editBtn,
-  .deleteBtn {
-    background-color: #28a745;
-    color: white;
-    padding: 6px 12px;
-    border: none;
-    cursor: pointer;
-    border-radius: 5px;
-    font-size: 14px;
-    margin: 5px;
-  }
-  
-  .saveBtn:hover,
-  .editBtn:hover,
-  .deleteBtn:hover {
-    background-color: #218838;
-  }
-  
-  .deleteBtn {
-    background-color: #28a745;
-  }
-  
-  .deleteBtn:hover {
-    background-color: #218838;
-  }
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.doctorItem {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.doctorDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.doctorHeader {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.doctorName {
+  margin: 0;
+  color: #2c5282;
+  font-size: 1.25rem;
+}
+
+.speciality {
+  color: #4a5568;
+  font-size: 0.9rem;
+}
+
+.doctorInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.doctorText {
+  margin: 0;
+  color: #4a5568;
+}
+
+.imageContainer {
+  width: 120px;
+  height: 120px;
+  margin: 10px auto;
+  position: relative;
+  border-radius: 60px;
+  overflow: hidden;
+  border: 3px solid #e2e8f0;
+}
+
+.doctorImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 60px;
+}
+
+.searchBar {
+  margin-bottom: 20px;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.searchInput {
+  padding: 8px 16px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  width: 300px;
+  font-size: 16px;
+}
+
+.searchButton {
+  padding: 8px 16px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.searchButton:hover {
+  background-color: #218838;
+}
+
+.mainContent {
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  gap: 20px;
+}
+
+.filtersContainer {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.filterHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.filterHeader h3 {
+  margin: 0;
+  color: #2c5282;
+}
+
+.resetButton {
+  padding: 4px 8px;
+  background: none;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #666;
+}
+
+.resetButton:hover {
+  background: #f0f0f0;
+}
+
+.filterSection {
+  margin-bottom: 20px;
+}
+
+.filterSection h4 {
+  margin: 0 0 10px 0;
+  color: #4a5568;
+}
+
+.filterOptions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.filterOption {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.filterOption input[type="radio"] {
+  cursor: pointer;
+}
+
+.filterOption span {
+  font-size: 14px;
+  color: #4a5568;
+}
+
+.applyBtn {
+  width: 100%;
+  padding: 8px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+.applyBtn:hover {
+  background-color: #218838;
+}
+
+.actionButtons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.editBtn, .deleteBtn {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s;
+}
+
+.editBtn {
+  background-color: #28a745;
+  color: white;
+}
+
+.editBtn:hover {
+  background-color: #218838;
+}
+
+.deleteBtn {
+  background-color: #dc3545;
+  color: white;
+}
+
+.deleteBtn:hover {
+  background-color: #c82333;
+}
+
+.editForm {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.formGroup {
+  margin-bottom: 15px;
+  width: 100%;
+}
+
+.formGroup label {
+  display: block;
+  margin-bottom: 5px;
+  color: #4a5568;
+  font-weight: 500;
+}
+
+.inputField {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: border-color 0.2s;
+}
+
+.inputField:focus {
+  outline: none;
+  border-color: #4299e1;
+  box-shadow: 0 0 0 1px #4299e1;
+}
+
+.errorInput {
+  border-color: #e53e3e;
+}
+
+.errorInput:focus {
+  border-color: #e53e3e;
+  box-shadow: 0 0 0 1px #e53e3e;
+}
+
+.errorText {
+  color: #e53e3e;
+  font-size: 12px;
+  margin-top: 4px;
+  display: block;
+}
+
+.editButtons {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.saveBtn {
+  padding: 8px 16px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.saveBtn:hover {
+  background-color: #218838;
+}
+
+.saveBtn.success {
+  background-color: #2f855a;
+}
+
+.cancelBtn {
+  padding: 8px 16px;
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.cancelBtn:hover {
+  background-color: #5a6268;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+  margin-top: 20px;
+}
+
+.paginationButton {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  background: white;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.paginationButton:hover:not(:disabled) {
+  background: #f0f0f0;
+}
+
+.paginationButton:disabled {
+  background: #f5f5f5;
+  cursor: not-allowed;
+  color: #999;
+}
+
+.activePage {
+  background: #28a745;
+  color: white;
+  border-color: #28a745;
+}
+
+.activePage:hover {
+  background: #218838;
+}
+
+.loading {
+  text-align: center;
+  padding: 20px;
+  color: #4a5568;
+  font-size: 1.2rem;
+}
+
+.error {
+  color: #dc3545;
+  text-align: center;
+  padding: 10px;
+  margin: 10px 0;
+  background-color: #ffe6e6;
+  border-radius: 4px;
+}
   
   
   
