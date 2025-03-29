@@ -1,14 +1,18 @@
+
 const express = require("express");
 
 const router = express.Router();
 
-const usersRouter = require("./usersRouter");
-router.use("/users", usersRouter);
+// Define route mappings in an object for better scalability
+const routes = {
+    users: require("./usersRouter"),
+    doctors: require("./doctorsRouter"),
+    appointments: require("./appointmentsRouter"),
+};
 
-const doctorsRouter = require("./doctorsRouter");
-router.use("/doctors", doctorsRouter);
-
-const appointmentsRouter = require("./appointmentsRouter");
-router.use("/appointments", appointmentsRouter);
+// Dynamically register routes
+Object.entries(routes).forEach(([path, route]) => {
+    router.use(`/${path}`, route);
+});
 
 module.exports = router;
