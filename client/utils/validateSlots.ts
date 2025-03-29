@@ -1,5 +1,5 @@
 import { Slot } from "../app/_Components/appointment/appointmentComp";
-import { isSlotInPast } from "./checkSlot";
+import { isSlotInPast } from "@/utils/checkSlot";
 
 export const validateSlots = (data: any, selectedDate: string) => {
     return data.map((slot: Slot) => {
@@ -10,8 +10,12 @@ export const validateSlots = (data: any, selectedDate: string) => {
             id: slot.id,
             doctor_id: slot.doctor_id,
             slot_time: slot.slot_time,
-            slot_type: slot.slot_type || "morning", // Default to morning if missing
-            is_available: isPastSlot ? false : true,
+            slot_type: slot.slot_type || "morning",
+            is_available: isPastSlot
+                ? false
+                : typeof slot.is_available === "boolean"
+                ? slot.is_available
+                : true,
         };
     });
 };

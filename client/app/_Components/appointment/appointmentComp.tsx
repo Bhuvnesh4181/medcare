@@ -60,7 +60,9 @@ export default function Appointment({ doctorId }: AppointmentProps) {
 
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
-                throw new Error(errorData.message || "Failed to fetch slots");
+                toast.error(errorData.message || "Failed to fetch slots");
+                setError(errorData.message || "Failed to fetch slots");
+                return;
             }
 
             const data = await response.json();
@@ -70,12 +72,12 @@ export default function Appointment({ doctorId }: AppointmentProps) {
 
             setSlots(validatedSlots);
         } catch (err) {
-            const errorMessage =
-                err instanceof Error
-                    ? err.message
-                    : "Failed to load available slots";
-            setError(errorMessage);
-            toast.error(errorMessage);
+            toast.error(
+                "Network error. Please check your connection and try again."
+            );
+            setError(
+                "Network error. Please check your connection and try again."
+            );
         } finally {
             setLoading(false);
         }
@@ -91,40 +93,83 @@ export default function Appointment({ doctorId }: AppointmentProps) {
 
         try {
             setLoading(true);
+
+            // Immediately disable the selected slot in the UI for better UX
+            setSlots((currentSlots) =>
+                currentSlots.map((slot) =>
+                    slot.id === selectedSlotId
+                        ? { ...slot, is_available: false }
+                        : slot
+                )
+            );
+
             const response = await fetch(`${API_BASE_URL}/appointments/book`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                     Accept: "application/json",
                 },
-                credentials: "include", // This is important for auth cookies
+                credentials: "include",
                 body: JSON.stringify({
                     doctorId,
                     slotId: selectedSlotId,
                     appointmentType,
+                    appointmentDate: selectedDate,
                 }),
             });
 
+            const data = await response.json().catch(() => ({}));
+
             if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                throw new Error(
-                    errorData.message || "Failed to book appointment"
+                // If booking failed, revert the slot to available
+                setSlots((currentSlots) =>
+                    currentSlots.map((slot) =>
+                        slot.id === selectedSlotId
+                            ? { ...slot, is_available: true }
+                            : slot
+                    )
                 );
+
+                if (
+                    response.status === 400 &&
+                    data.message?.includes("already booked")
+                ) {
+                    // Show toast and refresh slots
+                    toast.error(data.message || "Slot already booked");
+                    fetchAvailableSlots();
+                    return;
+                }
+
+                // Show toast for other errors
+                toast.error(data.message || "Failed to book appointment");
+                setError(data.message || "Failed to book appointment");
+                return;
             }
 
-            // Reset selection and refresh slots
+            // Reset selection
             setSelectedSlotId(null);
-            fetchAvailableSlots();
 
-            // Show success toast
-            toast.success("Appointment booked successfully!");
+            toast.success(data.message || "Appointment booked successfully!");
+
+            // Fetch fresh data from server after a short delay
+            setTimeout(() => {
+                fetchAvailableSlots();
+            }, 500);
         } catch (err) {
-            const errorMessage =
-                err instanceof Error
-                    ? err.message
-                    : "Failed to book appointment";
-            setError(errorMessage);
-            toast.error(errorMessage);
+            setSlots((currentSlots) =>
+                currentSlots.map((slot) =>
+                    slot.id === selectedSlotId
+                        ? { ...slot, is_available: true }
+                        : slot
+                )
+            );
+
+            toast.error(
+                "Network error. Please check your connection and try again."
+            );
+            setError(
+                "Network error. Please check your connection and try again."
+            );
         } finally {
             setLoading(false);
         }
