@@ -5,7 +5,7 @@ const cloudinary = require("../config/cloudinary.js");
 const storage = new CloudinaryStorage({
     cloudinary,
     params: {
-        folder: "doctor_profiles",
+        folder: "profile_pic",
         allowed_formats: ["jpg", "png", "jpeg"],
     },
 });

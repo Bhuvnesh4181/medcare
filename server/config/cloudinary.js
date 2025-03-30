@@ -1,27 +1,14 @@
-// require("dotenv").config();
-// const cloudinary = require("cloudinary").v2;
-
-// cloudinary.config({
-//     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-//     api_key: process.env.CLOUDINARY_API_KEY,
-//     api_secret: process.env.CLOUDINARY_API_SECRET,
-// });
-
-// module.exports = cloudinary;
-
+require('dotenv').config(); // Load environment variables from .env
 
 const cloudinary = require('cloudinary').v2;
-const dotenv = require('dotenv');
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const multer = require('multer');
 
-dotenv.config();
-
 // Configure Cloudinary with environment variables
 cloudinary.config({
-    cloud_name: 'dk9ivsv7y',
-    api_key: '921655857757635',
-    api_secret: 'tBwGnMH_YBE1TUrkWX4cmoUUKNU'
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
 // Test the configuration
@@ -32,7 +19,7 @@ cloudinary.api.ping()
 const storage = new CloudinaryStorage({
     cloudinary: cloudinary,
     params: {
-        folder: 'medcare/doctors',
+        folder: "profile_pic",
         allowed_formats: ['jpg', 'jpeg', 'png'],
         transformation: [{ width: 500, height: 500, crop: 'fill' }]
     }
