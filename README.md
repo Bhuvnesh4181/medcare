@@ -1,10 +1,11 @@
 # Doctor Appointment Web Application
 
 ## Overview
-This is a **Doctor Appointment Booking Web Application** where users can book **virtual or physical** appointments with doctors. However, appointments follow a **request-based system**, where a **Super Admin** approves or rejects them. The system consists of two applications:
+This is a **Doctor Appointment Booking Web Application** where users can book **virtual or physical** appointments with doctors. However, appointments follow a **request-based system**, where a **Super Admin** approves or rejects them. The system consists of three applications:
 
 1. **Main Website** - For users to register, browse doctors, and request appointments.
 2. **Backend** - Handles authentication, appointments, and database operations.
+3. **Admin Panel** - A separate interface for administrators to manage doctors, users, and appointments.
 
 ## Tech Stack
 - **Frontend:** Next.js (React framework)
