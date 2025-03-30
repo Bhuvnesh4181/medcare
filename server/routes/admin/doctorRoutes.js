@@ -32,13 +32,11 @@ router.get('/public', getAllDoctors);
 router.get('/public/:id', getDoctorById);
 router.get('/search', searchDoctors);
 
-// Admin protected routes
-// router.use(protect);
+
 
 router.get('/', getAllDoctors);
 router.get('/all', getAllDoctorsAdmin);
 router.post('/create', upload.single('profile_pic'), addDoctor);
-//router.put('/:id', upload.single('doctor_photo'), updateDoctor);
 router.delete('/:id', deleteDoctor);
 
 module.exports = router; 
