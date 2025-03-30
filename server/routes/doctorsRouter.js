@@ -97,4 +97,28 @@ router.get("/search", async (req, res) => {
     }
 });
 
+
+router.get("/doctor/:id", async (req, res) => {
+    const docId = parseInt(req.params.id);
+
+    if (!docId) {
+        return res
+            .status(400)
+            .json({ ok: false, message: "Missing payload values!" });
+    }
+
+    try {
+        const query = `SELECT * FROM doctors WHERE id=$1`;
+        const result = await db.one(query, [docId]);
+
+        return res.json({ ok: true, doctor: result });
+    } catch (err) {
+        console.error("Database error:", err.message);
+        return res.status(500).json({
+            ok: false,
+            message: "An error occurred while searching doctor: " + err.message,
+        });
+    }
+});
+
 module.exports = router;

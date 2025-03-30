@@ -4,6 +4,7 @@ import { ChangeEvent, useState, useEffect } from "react";
 import CardComp from "../Card/Card";
 import Search from "../SearchBar/Search";
 import styles from "./CardsGrid.module.css";
+import { useRouter } from "next/navigation";
 
 export interface Doctor {
     id: number;
@@ -50,6 +51,8 @@ export default function ShowCards() {
     const [searchApplied, setSearchApplied] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const itemsPerPage = 6;
+
+    const router = useRouter();
 
     useEffect(() => {
         if (!isResetting) {
@@ -194,7 +197,7 @@ export default function ShowCards() {
     };
 
     const resetFilters = async () => {
-        if (!filtersApplied) return;
+        if (!searchQuery) return;
 
         setIsResetting(true);
         setFilters({
@@ -319,7 +322,10 @@ export default function ShowCards() {
             <Search handleSearch={handleSearch} />
             <div className={styles.infoText}>
                 <p className={styles.docCount}>
-                    {totalDoctors} doctors available
+                    {totalDoctors}{" "}
+                    {totalDoctors === 1
+                        ? "doctor available"
+                        : "doctors available"}
                 </p>
                 <p className={styles.subText}>
                     Book appointments with minimum wait-time & verified doctor
@@ -546,6 +552,11 @@ export default function ShowCards() {
                                 profile_pic={doctor.profile_pic}
                                 rating={doctor.rating}
                                 specialty={doctor.specialty}
+                                handleCardClick={() =>
+                                    router.push(
+                                        `/appointments/doctor/${doctor.id}`
+                                    )
+                                }
                             />
                         ))}
                     </div>

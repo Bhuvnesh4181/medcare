@@ -3,6 +3,8 @@ import styles from "./Card.module.css";
 import Link from "next/link";
 import { Doctor } from "../CardsGrid/ShowCards";
 
+type CardCompProps = Doctor & { handleCardClick: () => void };
+
 export default function CardComp({
     experience,
     id,
@@ -10,9 +12,10 @@ export default function CardComp({
     profile_pic,
     rating,
     specialty,
-}: Doctor) {
+    handleCardClick,
+}: CardCompProps) {
     return (
-        <div key={id} className={styles.card}>
+        <div key={id} className={styles.card} onClick={handleCardClick}>
             <div className={styles.imageContainer}>
                 <Image
                     src={profile_pic}
@@ -45,7 +48,11 @@ export default function CardComp({
                 Rating: {rating}{" "}
                 <Image alt="star" width={20} height={20} src={"/star.svg"} />
             </div>
-            <Link href={`/bookingpage/${id}`} className={styles.bookButton}>
+            <Link
+                 href={`/bookingpage/${id}`}
+                 onClick={(e) => e.stopPropagation()}
+                 className={styles.bookButton}
+             >
                 Book Appointment
             </Link>
         </div>
