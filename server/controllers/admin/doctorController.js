@@ -94,20 +94,62 @@ exports.getAllDoctors = async (req, res) => {
         });
     }
 };
+// exports.addDoctor = async (req, res) => {
+//     try {
+//         const {
+//             name,
+//             specialty,
+//             experience,
+//             location,
+//             rating,
+//             gender,
+//         } = req.body;
+         
+//         let profilePicUrl = req.file ? req.file.path : null;
+//         const ratingValue = rating || 0; // Default to 0 if rating is not provided
+
+//         const doctor = await db.one(
+//             `INSERT INTO doctors 
+//                 (name, specialty, experience, location, rating, gender, profile_pic)
+//              VALUES ($1, $2, $3, $4, $5, $6, $7)
+//              RETURNING *`,
+//             [
+//                 name,
+//                 specialty,
+//                 experience,
+//                 location,
+//                 ratingValue,
+//                 gender,
+//                 profilePicUrl,
+//             ]
+//         );
+
+//         res.status(201).json({
+//             message: "Doctor added successfully",
+//             doctor,
+//         });
+//     } catch (error) {
+//         console.error("Error adding doctor:", error);
+//         res.status(500).json({ 
+//             message: "Error adding doctor", 
+//             error: error.message 
+//         });
+//     }
+// };
+
 exports.addDoctor = async (req, res) => {
     try {
-        const {
-            name,
-            specialty,
-            experience,
-            location,
-            rating,
-            gender,
-        } = req.body;
-         
-        let profilePicUrl = req.file ? req.file.path : null;
-        const ratingValue = rating || 0; // Default to 0 if rating is not provided
+        const { name, specialty, experience, location, rating, gender } = req.body;
 
+        // Ensure file is available in req.file
+        if (!req.file) {
+            return res.status(400).json({ message: 'No file uploaded' });
+        }
+
+        // Upload image to Cloudinary
+        const imageUrl = await uploadImage(req.file);
+
+        const ratings = rating || 0;
         const doctor = await db.one(
             `INSERT INTO doctors 
                 (name, specialty, experience, location, rating, gender, profile_pic)
@@ -118,25 +160,41 @@ exports.addDoctor = async (req, res) => {
                 specialty,
                 experience,
                 location,
-                ratingValue,
+                ratings,
                 gender,
-                profilePicUrl,
+                imageUrl,  // Use imageUrl here
             ]
         );
-
         res.status(201).json({
             message: "Doctor added successfully",
             doctor,
         });
     } catch (error) {
         console.error("Error adding doctor:", error);
-        res.status(500).json({ 
-            message: "Error adding doctor", 
-            error: error.message 
+        res.status(500).json({
+            message: "Error adding doctor",
+            error: error.message,
         });
     }
 };
 
+// Function to upload image to Cloudinary
+const uploadImage = async (file) => {
+    if (!file) {
+        throw new Error('No file provided for upload');
+    }
+
+    const base64Image = Buffer.from(file.buffer).toString('base64');
+    const dataURI = `data:${file.mimetype};base64,${base64Image}`;
+
+    try {
+        const uploadResponse = await cloudinary.uploader.upload(dataURI);
+        return uploadResponse.url;  // Return the uploaded image URL
+    } catch (error) {
+        console.error('Cloudinary upload error:', error);
+        throw new Error('Failed to upload image to Cloudinary');
+    }
+};
 exports.deleteDoctor = async (req, res) => {
     try {
         const  id  = parseInt(req.params.id);

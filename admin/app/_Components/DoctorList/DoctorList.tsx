@@ -78,11 +78,11 @@ export default function DoctorList() {
     return Object.keys(errors).length === 0;
   };
 
-  const handleEdit = (doctor: Doctor) => {
-    setEditingDoctor({ ...doctor });
-    setFormErrors({});
-    setUpdateSuccess(false);
-  };
+  // const handleEdit = (doctor: Doctor) => {
+  //   setEditingDoctor({ ...doctor });
+  //   setFormErrors({});
+  //   setUpdateSuccess(false);
+  // };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     if (!editingDoctor) return;

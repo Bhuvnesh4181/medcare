@@ -7,7 +7,7 @@ type Appointment = {
   id: number;
   doctor_id: number;
   doctor_name: string;
-  patient_name: string;
+  username: string;
   slot_id: number;
   mode: string;
   booked_at: string;
@@ -174,7 +174,7 @@ return (
               />
             )}
             <p>
-              <strong>Patient:</strong> {appt.patient_name || "Not Available"}
+              <strong>Patient:</strong> {appt.username || "Not Available"}
             </p>
             <p>
               <strong>Doctor:</strong> {appt.doctor_name || "Not Available"}
