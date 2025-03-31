@@ -1,5 +1,5 @@
 const db = require('../../config/db');
-
+const sendApprovalEmail=require('../../config/mailer')
 // Get all appointments
 exports.getAllAppointments = async (req, res) => {
     try {
@@ -62,14 +62,37 @@ exports.getPendingAppointments = async (req, res) => {
 exports.acceptAppointment = async (req, res) => {
     try {
         const { id } = req.params;
+
+        // Update the appointment status
         const appointment = await db.one(
             `UPDATE appointments 
              SET status = 'confirmed'
              WHERE id = $1
-             RETURNING *`,
+             RETURNING id, user_id, doctor_id, status`,
             [id]
         );
-        res.json(appointment);
+
+        // Send the response immediately before running the email function
+        res.json({
+            message: "Appointment confirmed successfully",
+            appointment,
+        });
+
+        // Fetch user details **after sending the response**
+        const user = await db.one(
+            `SELECT user_name, user_emailid 
+             FROM users 
+             WHERE user_id = $1`,
+            [appointment.user_id]
+        );
+
+        // Send confirmation email in the background
+        if (user.user_emailid) {
+            sendApprovalEmail(user.user_emailid, user.user_name)
+                .then(() => console.log("Email sent successfully"))
+                .catch((error) => console.error("Email sending failed:", error));
+        }
+
     } catch (error) {
         console.error("Error accepting appointment:", error.message);
         res.status(500).json({ message: 'Error accepting appointment', error: error.message });
