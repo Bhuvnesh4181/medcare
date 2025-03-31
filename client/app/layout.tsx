@@ -28,7 +28,7 @@ export default function RootLayout({
                     position="top-right"
                     closeButton
                     richColors
-                    duration={3000}
+                    duration={2000}
                     expand={false}
                     theme="light"
                 />

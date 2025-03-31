@@ -1,6 +1,6 @@
 const db = require('../../config/db');
 const multer = require('multer');
-const cloudinary = require('../../config/cloudinary');
+const {cloudinary} = require('../../config/cloudinary');
 
 exports.getAllDoctors = async (req, res) => {
     try {
@@ -104,7 +104,7 @@ exports.addDoctor = async (req, res) => {
             rating,
             gender,
         } = req.body;
-
+         
         let profilePicUrl = req.file ? req.file.path : null;
         const ratingValue = rating || 0; // Default to 0 if rating is not provided
 

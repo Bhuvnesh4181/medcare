@@ -11,21 +11,4 @@ cloudinary.config({
     api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-// Test the configuration
-cloudinary.api.ping()
-    .then(result => console.log('✅ Cloudinary connection successful:', result))
-    .catch(error => console.error('❌ Cloudinary connection failed:', error));
-
-const storage = new CloudinaryStorage({
-    cloudinary: cloudinary,
-    params: {
-        folder: "profile_pic",
-        allowed_formats: ['jpg', 'jpeg', 'png'],
-        transformation: [{ width: 500, height: 500, crop: 'fill' }]
-    }
-});
-
-const upload = multer({ storage: storage });
-
-// Export both Cloudinary and Multer Upload
-module.exports = { cloudinary, upload };
+module.exports = { cloudinary };

@@ -207,9 +207,7 @@ export default function DoctorList() {
                 </div>
               )}
               <div className={styles.actionButtons}>
-                <button className={styles.editBtn} onClick={() => handleEdit(doctor)}>
-                  Edit
-                </button>
+               
                 <button className={styles.deleteBtn} onClick={() => handleDelete(doctor.doctor_id)}>
                   Delete
                 </button>

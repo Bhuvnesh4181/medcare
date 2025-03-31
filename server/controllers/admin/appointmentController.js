@@ -4,25 +4,24 @@ const db = require('../../config/db');
 exports.getAllAppointments = async (req, res) => {
     try {
         const appointments = await db.any(`
-      SELECT 
-    a.id,
-    a.user_id,
-    u.user_name AS patient_name,
-    a.doctor_id,
-    d.user_name AS doctor_name,  -- Assuming doctors are also stored in users table
-    a.slot_id,
-    a.appointment_type AS mode_of_appointment,
-    a.appointment_date,
-    a.status,
-    s.slot_time
-FROM appointments a
-LEFT JOIN slots s ON a.slot_id = s.id
-LEFT JOIN users u ON a.user_id = u.user_id  -- Ensure the user table is correctly joined
-LEFT JOIN users d ON a.doctor_id = d.user_id  -- Ensure doctor details are retrieved correctly
-WHERE a.status = 'pending'
-ORDER BY a.appointment_date DESC;
-
-
+       SELECT 
+                a.id,
+                a.appointment_date,
+                s.slot_time,
+                a.slot_id,
+                a.status,
+                d.id as doctor_id,
+                d.name as doctor_name,
+                d.specialty as doctor_specialty,
+                u.user_id as user_id,
+                u.user_name as username,
+                u.user_emailid as user_emailid
+            FROM appointments a
+            join slots s on a.slot_id=s.id
+            JOIN doctors d ON a.doctor_id = d.id
+            JOIN users u ON a.user_id = u.user_id
+            WHERE a.status = 'pending'  -- Only fetch pending appointments
+            ORDER BY a.appointment_date DESC, a.slot_id ASC
         `);
         res.json(appointments);
     } catch (error) {

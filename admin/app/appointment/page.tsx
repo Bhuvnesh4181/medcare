@@ -14,7 +14,7 @@ type Appointment = {
   appointment_date: string;
   mode_of_appointment: string;
   status: string;
-  time_slot: string; // Updated to always include time_slot
+  slot_time: string; // Updated to always include time_slot
   doctor_photo?: string; // Add this field
 };
 
@@ -183,14 +183,9 @@ return (
               <strong>Date:</strong> {appt.appointment_date ? new Date(appt.appointment_date).toLocaleDateString() : "Not Available"}
             </p>
             <p>
-              <strong>Time:</strong> {formatTimeSlot(appt.time_slot)||" Not Available"}
+              <strong>Time:</strong> {formatTimeSlot(appt.slot_time)||" Not Available"}
             </p>
-            <p>
-              <strong>Mode:</strong> {appt.mode || "Not Available"}
-            </p>
-            <p>
-              <strong>Booked At:</strong> {appt.booked_at ? new Date(appt.booked_at).toLocaleString() : "Not Available"}
-            </p>
+            
             <p>
               Status:{" "}
               <span
