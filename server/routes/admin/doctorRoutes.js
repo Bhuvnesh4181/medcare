@@ -3,11 +3,11 @@ const router = express.Router();
 const multer = require('multer');
 // const {protect} = require('../../middleware/authMiddleware');
 const {
-    getAllDoctors,
+    // getAllDoctors,
     addDoctor,
     deleteDoctor,
-    getDoctorById,
-    searchDoctors,
+    // getDoctorById,
+    // searchDoctors,
     getAllDoctorsAdmin
 } = require('../../controllers/admin/doctorController');
 
@@ -27,14 +27,9 @@ const upload = multer({
     }
 });
 
-// Public routes
-router.get('/public', getAllDoctors);
-router.get('/public/:id', getDoctorById);
-router.get('/search', searchDoctors);
 
 
-
-router.get('/', getAllDoctors);
+// router.get('/', getAllDoctors);
 router.get('/all', getAllDoctorsAdmin);
 router.post('/create', upload.single('profile_pic'), addDoctor);
 router.delete('/:id', deleteDoctor);

@@ -41,12 +41,12 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Debug middleware
-app.use((req, res, next) => {
-    console.log("Session:", req.session);
-    console.log("User:", req.user);
-    console.log("Authenticated:", req.isAuthenticated());
-    next();
-});
+// app.use((req, res, next) => {
+//     console.log("Session:", req.session);
+//     console.log("User:", req.user);
+//     console.log("Authenticated:", req.isAuthenticated());
+//     next();
+// });
 
 app.get("/", (req, res) => {
     res.send("Hello world");

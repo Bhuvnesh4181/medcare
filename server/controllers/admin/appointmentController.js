@@ -31,33 +31,33 @@ exports.getAllAppointments = async (req, res) => {
 };
 
 // Get pending appointments
-exports.getPendingAppointments = async (req, res) => {
-    try {
-        const appointments = await db.any(`
-                    SELECT 
-                a.id AS appointment_id,
-                a.doctor_id,
-                a.user_id,
-                a.appointment_type AS mode_of_appointment,
-                a.appointment_date,
-                a.status,
-                s.slot_time AS time_slot,
-                d.name AS doctor_name,
-                d.profile_pic AS doctor_photo,
-                d.specialty
-            FROM appointments a
-            LEFT JOIN slots s ON a.slot_id = s.id
-            LEFT JOIN doctors d ON a.doctor_id = d.id
-            WHERE a.status = 'pending'
-            ORDER BY a.appointment_date DESC;
+// exports.getPendingAppointments = async (req, res) => {
+//     try {
+//         const appointments = await db.any(`
+//                     SELECT 
+//                 a.id AS appointment_id,
+//                 a.doctor_id,
+//                 a.user_id,
+//                 a.appointment_type AS mode_of_appointment,
+//                 a.appointment_date,
+//                 a.status,
+//                 s.slot_time AS time_slot,
+//                 d.name AS doctor_name,
+//                 d.profile_pic AS doctor_photo,
+//                 d.specialty
+//             FROM appointments a
+//             LEFT JOIN slots s ON a.slot_id = s.id
+//             LEFT JOIN doctors d ON a.doctor_id = d.id
+//             WHERE a.status = 'pending'
+//             ORDER BY a.appointment_date DESC;
 
-        `);
-        res.json(appointments);
-    } catch (error) {
-        console.error("Error fetching pending appointments:", error.message);
-        res.status(500).json({ message: 'Error fetching pending appointments', error: error.message });
-    }
-};
+//         `);
+//         res.json(appointments);
+//     } catch (error) {
+//         console.error("Error fetching pending appointments:", error.message);
+//         res.status(500).json({ message: 'Error fetching pending appointments', error: error.message });
+//     }
+// };
 // Accept appointment
 exports.acceptAppointment = async (req, res) => {
     try {
