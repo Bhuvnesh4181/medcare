@@ -17,29 +17,23 @@ interface UserContextType {
     logout: () => Promise<void>;
 }
 
-export const LoginContext = createContext<UserContextType | undefined>(
-    undefined
-);
+const LoginContext = createContext<UserContextType | undefined>(undefined);
 
-export const LoginProvider = ({ children }: { children: React.ReactNode }) => {
+const LoginProvider = ({ children }: { children: React.ReactNode }) => {
     const [user, setUser] = useState<User | null>(null);
     const [isLoading, setIsLoading] = useState(true);
-
     const router = useRouter();
 
     const fetchUser = async () => {
         try {
-            const res = await fetch(
-                "/api/users/me?_t=" + new Date().getTime(),
-                {
-                    credentials: "include",
-                    cache: "no-cache",
-                    headers: {
-                        "Cache-Control": "no-cache, no-store, must-revalidate",
-                        Pragma: "no-cache",
-                    },
-                }
-            );
+            const res = await fetch("/api/users/me", {
+                credentials: "include",
+                cache: "no-cache",
+                headers: {
+                    "Cache-Control": "no-cache, no-store, must-revalidate",
+                    Pragma: "no-cache",
+                },
+            });
 
             if (res.ok) {
                 const userData = await res.json();
@@ -58,13 +52,18 @@ export const LoginProvider = ({ children }: { children: React.ReactNode }) => {
 
     const logout = async () => {
         try {
-            await fetch("/api/users/logout", {
+            const res = await fetch("/api/users/logout", {
                 method: "POST",
                 credentials: "include",
             });
-            setUser(null);
-            toast.success("Logged out successfully");
-            router.push("/");
+
+            if (res.ok) {
+                setUser(null);
+                toast.success("Logged out successfully");
+                router.push("/");
+            } else {
+                throw new Error("Logout failed");
+            }
         } catch (error) {
             toast.error("Logout failed. Please try again.");
         }
@@ -74,10 +73,7 @@ export const LoginProvider = ({ children }: { children: React.ReactNode }) => {
         fetchUser();
     }, []);
 
-    // Don't render children until we've checked the user's authentication status
-    if (isLoading) {
-        return null; // Or a loading spinner
-    }
+    if (isLoading) return null;
 
     return (
         <LoginContext.Provider value={{ user, setUser, fetchUser, logout }}>
@@ -86,9 +82,10 @@ export const LoginProvider = ({ children }: { children: React.ReactNode }) => {
     );
 };
 
-export const useLogin = () => {
+const useLogin = () => {
     const context = useContext(LoginContext);
-    if (!context)
-        throw new Error("useLogin must be used within a LoginProvider");
+    if (!context) throw new Error("useLogin must be used within a LoginProvider");
     return context;
 };
+
+export { LoginProvider, useLogin };

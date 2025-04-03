@@ -19,7 +19,7 @@ transporter.verify((error, success) => {
 
 const sendApprovalEmail = async (userEmail, userName) => {
     const mailOptions = {
-        from: 'aditya.pandey@tothenew.com',
+        from: 'bhvneshsharma4181@gmail.com',
         to: userEmail,
         subject: 'Appointment Approved',
         text: `Dear ${userName}, your appointment request has been approved.`,

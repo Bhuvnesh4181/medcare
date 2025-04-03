@@ -1,69 +1,45 @@
 const db = require('../../config/db');
-const multer = require('multer');
-const {cloudinary} = require('../../config/cloudinary');
-
-
-exports.addDoctor = async (req, res) => {
-    try {
-        const { name, specialty, experience, location, rating, gender } = req.body;
-
-        // Ensure file is available in req.file
-        if (!req.file) {
-            return res.status(400).json({ message: 'No file uploaded' });
-        }
-
-        // Upload image to Cloudinary
-        const imageUrl = await uploadImage(req.file);
-
-        const ratings = rating || 0;
-        const doctor = await db.one(
-            `INSERT INTO doctors 
-                (name, specialty, experience, location, rating, gender, profile_pic)
-             VALUES ($1, $2, $3, $4, $5, $6, $7)
-             RETURNING *`,
-            [
-                name,
-                specialty,
-                experience,
-                location,
-                ratings,
-                gender,
-                imageUrl,  // Use imageUrl here
-            ]
-        );
-        res.status(201).json({
-            message: "Doctor added successfully",
-            doctor,
-        });
-    } catch (error) {
-        console.error("Error adding doctor:", error);
-        res.status(500).json({
-            message: "Error adding doctor",
-            error: error.message,
-        });
-    }
-};
+const { cloudinary } = require('../../config/cloudinary');
 
 // Function to upload image to Cloudinary
 const uploadImage = async (file) => {
-    if (!file) {
-        throw new Error('No file provided for upload');
-    }
+    if (!file) throw new Error('No file provided for upload');
 
     const base64Image = Buffer.from(file.buffer).toString('base64');
     const dataURI = `data:${file.mimetype};base64,${base64Image}`;
 
     try {
         const uploadResponse = await cloudinary.uploader.upload(dataURI);
-        return uploadResponse.url;  // Return the uploaded image URL
+        return uploadResponse.url;
     } catch (error) {
         console.error('Cloudinary upload error:', error);
         throw new Error('Failed to upload image to Cloudinary');
     }
 };
+
+exports.addDoctor = async (req, res) => {
+    try {
+        const { name, specialty, experience, location, rating = 0, gender } = req.body;
+
+        if (!req.file) return res.status(400).json({ message: 'No file uploaded' });
+
+        const imageUrl = await uploadImage(req.file);
+        const doctor = await db.one(
+            `INSERT INTO doctors (name, specialty, experience, location, rating, gender, profile_pic)
+             VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
+            [name, specialty, experience, location, rating, gender, imageUrl]
+        );
+
+        res.status(201).json({ message: "Doctor added successfully", doctor });
+    } catch (error) {
+        console.error("Error adding doctor:", error);
+        res.status(500).json({ message: "Error adding doctor", error: error.message });
+    }
+};
+
 exports.deleteDoctor = async (req, res) => {
     try {
-        const  id  = parseInt(req.params.id);
+        const id = parseInt(req.params.id);
         await db.none('DELETE FROM doctors WHERE id = $1', [id]);
         res.json({ message: 'Doctor deleted successfully' });
     } catch (error) {
@@ -81,10 +57,8 @@ exports.getDoctorById = async (req, res) => {
     }
 };
 
-
 exports.getAllDoctorsAdmin = async (req, res) => {
     try {
-        // Fetch all doctors with correct column names
         const doctors = await db.any(`
             SELECT 
                 id AS doctor_id,
@@ -95,23 +69,12 @@ exports.getAllDoctorsAdmin = async (req, res) => {
                 location,
                 profile_pic AS doctor_photo
             FROM doctors 
-            ORDER BY name
-        `);
+            ORDER BY name`
+        );
 
-        // Send response
-        res.json({
-            ok: true,
-            data: {
-                rows: doctors
-            }
-        });
-
+        res.json({ ok: true, data: { rows: doctors } });
     } catch (error) {
         console.error("Error in getAllDoctorsAdmin:", error.message);
-        res.status(500).json({
-            ok: false,
-            message: "Failed to fetch doctors",
-            error: error.message
-        });
+        res.status(500).json({ ok: false, message: "Failed to fetch doctors", error: error.message });
     }
 };
