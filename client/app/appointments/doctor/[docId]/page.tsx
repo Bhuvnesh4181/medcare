@@ -11,63 +11,57 @@ interface DoctorResponse {
     message?: string;
 }
 
-const DoctorPage = () => {
-    const { docId } = useParams();
+const DoctorPage: React.FC = () => {
+    const { docId } = useParams<{ docId: string }>();
     const [doctor, setDoctor] = useState<Doctor | null>(null);
-    const [loading, setLoading] = useState<boolean>(false);
-    const [error, setError] = useState<string>("");
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        async function fetchDoctor() {
+        if (!docId) {
+            setError("Invalid doctor ID.");
+            setLoading(false);
+            return;
+        }
+
+        const fetchDoctor = async () => {
             try {
-                setLoading(true);
-                const res = await fetch(
+                const response = await fetch(
                     `http://localhost:3001/api/doctors/doctor/${docId}`
                 );
 
-                const data: DoctorResponse = await res.json();
-
-                if (!data.ok) {
-                    console.log("No doctor found!");
-                    return;
+                if (!response.ok) {
+                    throw new Error("Failed to fetch doctor details.");
                 }
 
-                if (data.doctor) {
-                    setDoctor(data.doctor);
-                } else {
-                    console.log("Doctor data structure not recognized");
-                    setError("Doctor data structure not recognized");
+                const data: DoctorResponse = await response.json();
+
+                if (!data.ok || !data.doctor) {
+                    throw new Error(data.message || "Doctor not found.");
                 }
-            } catch (err: any) {
-                console.log("Failed to fetch doctor");
-                setError(err.message);
+
+                setDoctor(data.doctor);
+            } catch (err: unknown) {
+                setError(err instanceof Error ? err.message : "An unexpected error occurred.");
             } finally {
                 setLoading(false);
             }
-        }
+        };
 
         fetchDoctor();
     }, [docId]);
 
-    if (loading) {
-        return <div>Loading doctor data...</div>;
-    }
-
-    if (error) {
-        return <div>Error fetching doctor: {error}</div>;
-    }
-
-    if (!doctor) {
-        return <div>No doctor found...</div>;
-    }
+    if (loading) return <div>Loading doctor data...</div>;
+    if (error) return <div>Error: {error}</div>;
+    if (!doctor) return <div>No doctor found.</div>;
 
     return (
         <DoctorDetails
-            id={doctor.id}
+            id={doctor.id.toString()}
             name={doctor.name}
-            experience={doctor.experience}
+            experience={Number(doctor.experience) || 0} // Ensures valid number
             profile_pic={doctor.profile_pic}
-            rating={doctor.rating}
+            rating={Number(doctor.rating) || 0} // Ensures valid number
             specialty={doctor.specialty}
         />
     );

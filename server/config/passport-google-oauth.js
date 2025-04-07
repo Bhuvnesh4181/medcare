@@ -1,64 +1,62 @@
+const authStrategy = require("passport");
+const { Strategy: ExternalAuthStrategy } = require("passport-google-oauth20");
+const dataStore = require("./db.js");
 
-
-const passport = require("passport");
-const { Strategy: GoogleStrategy } = require("passport-google-oauth20");
-const db = require("./db.js");
-
-// Google OAuth Strategy
-passport.use(
-    new GoogleStrategy(
+// External authentication configuration
+authStrategy.use(
+    new ExternalAuthStrategy(
         {
             clientID: process.env.GOOGLE_CLIENT_ID,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET,
             callbackURL: process.env.GOOGLE_CALLBACK_URL,
         },
-        async (accessToken, refreshToken, profile, done) => {
+        async (accessCred, refreshCred, userProfile, complete) => {
             try {
-                const email = profile.emails?.[0]?.value;
-                const name = profile.displayName;
-
-                if (!email) {
-                    return done(new Error("Google profile does not have an email"), null);
+                const contactEmail = userProfile.emails?.[0]?.value;
+                const displayName = userProfile.displayName;
+                
+                if (!contactEmail) {
+                    return complete(new Error("Authentication profile missing email information"), null);
                 }
-
-                // Check if user already exists
-                let user = await db.oneOrNone("SELECT * FROM users WHERE user_emailid = $1", [email]);
-
-                if (!user) {
-                    // Insert new user if not found
-                    const query = `
+                
+                // Verify account existence
+                let account = await dataStore.oneOrNone("SELECT * FROM users WHERE user_emailid = $1", [contactEmail]);
+                
+                if (!account) {
+                    // Create new account record
+                    const insertStatement = `
                         INSERT INTO users(user_name, user_emailid, password)
                         VALUES($1, $2, $3)
                         RETURNING user_id, user_name, user_emailid;
                     `;
-
-                    const newUser = await db.one(query, [name, email, "google-oauth"]);
-                    user = newUser;
+                    
+                    const freshAccount = await dataStore.one(insertStatement, [displayName, contactEmail, "external-auth"]);
+                    account = freshAccount;
                 }
-
-                return done(null, user);
-            } catch (error) {
-                console.error("🔥 Google OAuth Error:", error);
-                return done(error, null);
+                
+                return complete(null, account);
+            } catch (failure) {
+                console.error("⚠️ External Authentication Error:", failure);
+                return complete(failure, null);
             }
         }
     )
 );
 
-// Serialize user (store user_id in session)
-passport.serializeUser((user, done) => {
-    done(null, user.user_id);
+// Store account identifier in session
+authStrategy.serializeUser((account, complete) => {
+    complete(null, account.user_id);
 });
 
-// Deserialize user (retrieve user from database)
-passport.deserializeUser(async (id, done) => {
+// Retrieve complete account from identifier
+authStrategy.deserializeUser(async (identifier, complete) => {
     try {
-        const user = await db.oneOrNone("SELECT * FROM users WHERE user_id = $1", [id]);
-        done(null, user);
-    } catch (error) {
-        console.error("🔥 Error in deserializing user:", error);
-        done(error, null);
+        const account = await dataStore.oneOrNone("SELECT * FROM users WHERE user_id = $1", [identifier]);
+        complete(null, account);
+    } catch (failure) {
+        console.error("⚠️ Account retrieval error:", failure);
+        complete(failure, null);
     }
 });
 
-module.exports = passport;
+module.exports = authStrategy;

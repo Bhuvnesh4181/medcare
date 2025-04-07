@@ -7,7 +7,7 @@ const {
     getAllDoctorsAdmin
 } = require('../../controllers/admin/doctorController');
 
-// Configure multer for memory storage
+
 const upload = multer({
     storage: multer.memoryStorage(),
     limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit

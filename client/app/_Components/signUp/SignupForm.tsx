@@ -1,25 +1,31 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import Link from "next/link";
-import styles from "./signup.module.css";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useLogin } from "@/providers/loginProvider";
 import GoogleSignInButton from "../GoogleSignInButton/GoogleSignInButton";
 import { toast } from "sonner";
+import styles from "./signup.module.css";
 
 export default function SignUpForm() {
-    const [name, setName] = useState("");
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+    const [formData, setFormData] = useState({ name: "", email: "", password: "" });
     const [isLoading, setIsLoading] = useState(false);
 
     const router = useRouter();
-    const { fetchUser, setUser } = useLogin();
+
+    // Handle input changes dynamically
+    const handleChange = useCallback(
+        (e: React.ChangeEvent<HTMLInputElement>) => {
+            setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+        },
+        []
+    );
 
     const handleRegister = async (e?: React.FormEvent) => {
         if (e) e.preventDefault();
+        const { name, email, password } = formData;
+
         if (!name || !email || !password) {
             toast.error("Please fill in all fields");
             return;
@@ -29,64 +35,33 @@ export default function SignUpForm() {
         try {
             const response = await fetch("/api/users/register", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ name, email, password }),
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(formData),
                 credentials: "include",
             });
 
-            const data = await response.json();
-            if (data.ok) {
-                // For direct login after registration, let's also make a login request
-                try {
-                    const loginResponse = await fetch("/api/users/login", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({ email, password }),
-                        credentials: "include",
-                    });
-
-                    const loginData = await loginResponse.json();
-
-                    if (loginData.ok) {
-                        // Set user explicitly from login response
-                        setUser(loginData.user);
-                        await fetchUser();
-                        toast.success("Registration and login successful!");
-                        router.replace("/");
-                    } else {
-                        toast.error(
-                            "Registration successful but login failed. Please login manually."
-                        );
-                        router.replace("/login");
-                    }
-                } catch (loginError) {
-                    toast.error("Registration successful! Please login.");
-                    router.replace("/login");
-                }
-            } else {
-                toast.error(data.message || "Registration failed");
+            if (!response.ok) {
+                const data = await response.json().catch(() => ({}));
+                throw new Error(data.message || "Registration failed");
             }
-        } catch (error) {
-            toast.error("An error occurred while registering.");
+
+            toast.success("Registration successful! Please log in.");
+            router.replace("/login"); // Redirect to login page
+        } catch (error: any) {
+            toast.error(error.message || "An error occurred while registering.");
         } finally {
             setIsLoading(false);
         }
     };
 
-    const handleReset = () => {
-        setName("");
-        setEmail("");
-        setPassword("");
+    const handleReset = useCallback(() => {
+        setFormData({ name: "", email: "", password: "" });
         toast.info("Form reset");
-    };
+    }, []);
 
-    const handleGoogleSignIn = () => {
+    const handleGoogleSignIn = useCallback(() => {
         window.location.href = "http://localhost:3001/api/users/google";
-    };
+    }, []);
 
     return (
         <div className={styles.signupContainer}>
@@ -98,65 +73,47 @@ export default function SignUpForm() {
             <form onSubmit={handleRegister}>
                 <label>Name</label>
                 <div className={styles.inputField}>
-                    <section className={styles.inputcontainer}>
-                        <span>
-                            <Image
-                                src="/name.svg"
-                                alt="name logo"
-                                height={20}
-                                width={20}
-                            />
-                        </span>
+                    <div className={styles.inputContainer}>
+                        <Image src="/name.svg" alt="Name icon" height={20} width={20} />
                         <input
                             type="text"
+                            name="name"
                             placeholder="Enter your name"
                             required
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
+                            value={formData.name}
+                            onChange={handleChange}
                         />
-                    </section>
+                    </div>
                 </div>
 
                 <label>Email</label>
                 <div className={styles.inputField}>
-                    <section className={styles.inputcontainer}>
-                        <span>
-                            <Image
-                                src="/email.svg"
-                                alt="Email logo"
-                                height={20}
-                                width={20}
-                            />
-                        </span>
+                    <div className={styles.inputContainer}>
+                        <Image src="/email.svg" alt="Email icon" height={20} width={20} />
                         <input
                             type="email"
+                            name="email"
                             placeholder="Enter your email"
                             required
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
+                            value={formData.email}
+                            onChange={handleChange}
                         />
-                    </section>
+                    </div>
                 </div>
 
                 <label>Password</label>
                 <div className={styles.inputField}>
-                    <section className={styles.inputcontainer}>
-                        <span>
-                            <Image
-                                src="/lockPass.svg"
-                                alt="pass logo"
-                                height={20}
-                                width={20}
-                            />
-                        </span>
+                    <div className={styles.inputContainer}>
+                        <Image src="/lockPass.svg" alt="Password icon" height={20} width={20} />
                         <input
                             type="password"
+                            name="password"
                             placeholder="********"
                             required
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
+                            value={formData.password}
+                            onChange={handleChange}
                         />
-                    </section>
+                    </div>
                 </div>
 
                 <button
@@ -173,14 +130,12 @@ export default function SignUpForm() {
                 >
                     Reset
                 </button>
+
                 <div className={styles.divider}>
                     <span>or</span>
                 </div>
 
-                <GoogleSignInButton
-                    onClick={handleGoogleSignIn}
-                    text="Sign up with Google"
-                />
+                <GoogleSignInButton onClick={handleGoogleSignIn} text="Sign up with Google" />
             </form>
         </div>
     );

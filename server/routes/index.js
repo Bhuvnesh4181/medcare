@@ -1,6 +1,3 @@
-
-
-//------
 const express = require("express");
 const router = express.Router();
 
@@ -9,7 +6,7 @@ const routes = {
     users: require("./usersRouter"),
     doctors: require("./doctorsRouter"),
     appointments: require("./appointmentsRouter"),
-    admin: require("./adminRouter"),  // Consolidated admin routes
+    admin: require("./adminRouter"), 
 };
 
 // Dynamically register routes

@@ -1,59 +1,59 @@
-const passport = require("passport");
-const { Strategy: LocalStrategy } = require("passport-local");
-const bcrypt = require("bcrypt");
-const db = require("../config/db.js");
+const authHandler = require("passport");
+const { Strategy: CredentialStrategy } = require("passport-local");
+const encoder = require("bcrypt");
+const dataStore = require("../config/db.js");
 
-// Local Strategy for User Authentication
-passport.use(
-    new LocalStrategy(
+// Credential-based account verification
+authHandler.use(
+    new CredentialStrategy(
         { usernameField: "email" },
-        async (email, password, done) => {
+        async (email, password, complete) => {
             try {
-                // Fetch user from database
-                const user = await db.oneOrNone(
+                // Retrieve account information
+                const account = await dataStore.oneOrNone(
                     "SELECT * FROM users WHERE user_emailid = $1",
                     [email]
                 );
-
-                if (!user) {
-                    return done(null, false, { message: "Incorrect email." });
+                
+                if (!account) {
+                    return complete(null, false, { message: "Incorrect email." });
                 }
-
-                // Verify password
-                const isMatch = await bcrypt.compare(password, user.password);
-                if (!isMatch) {
-                    return done(null, false, { message: "Incorrect password." });
+                
+                // Validate credentials
+                const credentialsValid = await encoder.compare(password, account.password);
+                if (!credentialsValid) {
+                    return complete(null, false, { message: "Incorrect password." });
                 }
-
-                return done(null, user);
-            } catch (error) {
-                console.error("🔥 Authentication Error:", error);
-                return done(error);
+                
+                return complete(null, account);
+            } catch (failure) {
+                console.error("⚠️ Verification Error:", failure);
+                return complete(failure);
             }
         }
     )
 );
 
-// Serialize user (store user_id in session)
-passport.serializeUser((user, done) => done(null, user.user_id));
+// Persist account identifier to session
+authHandler.serializeUser((account, complete) => complete(null, account.user_id));
 
-// Deserialize user (retrieve user from database)
-passport.deserializeUser(async (id, done) => {
+// Retrieve full account details from identifier
+authHandler.deserializeUser(async (identifier, complete) => {
     try {
-        const user = await db.oneOrNone("SELECT * FROM users WHERE user_id = $1", [id]);
-        done(null, user);
-    } catch (error) {
-        console.error("🔥 Error in deserializing user:", error);
-        done(error);
+        const account = await dataStore.oneOrNone("SELECT * FROM users WHERE user_id = $1", [identifier]);
+        complete(null, account);
+    } catch (failure) {
+        console.error("⚠️ Account retrieval error:", failure);
+        complete(failure);
     }
 });
 
-// Middleware to Check Authentication
-passport.checkAuthentication = (req, res, next) => {
-    if (req.isAuthenticated()) {
+// Session validation middleware
+authHandler.checkAuthentication = (request, response, next) => {
+    if (request.isAuthenticated()) {
         return next();
     }
-    return res.redirect("https://localhost:3000/login");
+    return response.redirect("https://localhost:3000/login");
 };
 
-module.exports = passport;
+module.exports = authHandler;

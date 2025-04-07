@@ -7,58 +7,37 @@ interface CalendarProps {
 
 const Calendar = ({ onDateSelect }: CalendarProps) => {
     const [selectedDate, setSelectedDate] = useState(new Date());
-    const [offset, setOffset] = useState(0);
     const [minDate, setMinDate] = useState(new Date());
 
-    // Initialize with today's date on component mount
+    // Ensure today is the minimum selectable date
     useEffect(() => {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         setMinDate(today);
 
-        // If selected date is in the past, set it to today
+        // Prevent selecting past dates on initial load
         if (selectedDate < today) {
             setSelectedDate(today);
             onDateSelect(today.toISOString().split("T")[0]);
         }
     }, []);
 
-    const handlePrev = () => {
+    const updateDate = (daysToAdd: number) => {
         const newDate = new Date(selectedDate);
-        newDate.setDate(selectedDate.getDate() - 1);
+        newDate.setDate(selectedDate.getDate() + daysToAdd);
 
-        // Don't allow setting date before today
         if (newDate >= minDate) {
-            setOffset((prev) => prev - 1);
             setSelectedDate(newDate);
             onDateSelect(newDate.toISOString().split("T")[0]);
         }
     };
 
-    const handleNext = () => {
-        const newDate = new Date(selectedDate);
-        newDate.setDate(selectedDate.getDate() + 1);
-        setOffset((prev) => prev + 1);
-        setSelectedDate(newDate);
-        onDateSelect(newDate.toISOString().split("T")[0]);
-    };
-
-    const handleDateSelect = (date: Date) => {
-        // Don't allow selecting dates before today
-        if (date >= minDate) {
-            setSelectedDate(date);
-            onDateSelect(date.toISOString().split("T")[0]);
-        }
-    };
-
     const renderDates = () => {
-        const dates = [];
-        for (let i = 0; i < 7; i++) {
+        return Array.from({ length: 7 }, (_, i) => {
             const date = new Date(selectedDate);
             date.setDate(selectedDate.getDate() + i - 3);
-            dates.push(date);
-        }
-        return dates;
+            return date;
+        });
     };
 
     return (
@@ -66,22 +45,17 @@ const Calendar = ({ onDateSelect }: CalendarProps) => {
             <div className={styles.header}>
                 <div className={styles.arrowWrapper}>
                     <button
-                        onClick={handlePrev}
-                        className={`${styles.arrowContainer} ${
-                            selectedDate <= minDate ? styles.disabled : ""
-                        }`}
+                        onClick={() => updateDate(-1)}
+                        className={`${styles.arrowContainer} ${selectedDate <= minDate ? styles.disabled : ""}`}
                         disabled={selectedDate <= minDate}
                     >
                         <span className={styles.arrow}>&lt;</span>
                     </button>
                     <span className={styles.monthYear}>
-                        {selectedDate.toLocaleString("default", {
-                            month: "long",
-                        })}{" "}
-                        {selectedDate.getFullYear()}
+                        {selectedDate.toLocaleString("default", { month: "long" })} {selectedDate.getFullYear()}
                     </span>
                     <button
-                        onClick={handleNext}
+                        onClick={() => updateDate(1)}
                         className={styles.arrowContainer}
                     >
                         <span className={styles.arrow}>&gt;</span>
@@ -92,22 +66,17 @@ const Calendar = ({ onDateSelect }: CalendarProps) => {
                 {renderDates().map((date, index) => (
                     <button
                         key={index}
-                        className={`${styles.dateButton} ${
-                            date.toDateString() === selectedDate.toDateString()
-                                ? styles.selectedDate
-                                : ""
-                        } ${date < minDate ? styles.disabledDate : ""}`}
-                        onClick={() => handleDateSelect(date)}
+                        className={`${styles.dateButton} 
+                            ${date.toDateString() === selectedDate.toDateString() ? styles.selectedDate : ""} 
+                            ${date < minDate ? styles.disabledDate : ""}`}
+                        onClick={() => updateDate(date.getDate() - selectedDate.getDate())}
                         disabled={date < minDate}
                     >
                         <div className={styles.day}>
-                            {date.toLocaleString("default", {
-                                weekday: "short",
-                            })}
+                            {date.toLocaleString("default", { weekday: "short" })}
                         </div>
                         <div className={styles.date}>
-                            {date.getDate()}{" "}
-                            {date.toLocaleString("default", { month: "short" })}
+                            {date.getDate()} {date.toLocaleString("default", { month: "short" })}
                         </div>
                     </button>
                 ))}

@@ -1,20 +1,19 @@
 const db = require('../../config/db');
 const { cloudinary } = require('../../config/cloudinary');
 
-// Function to upload image to Cloudinary
-const uploadImage = async (file) => {
-    if (!file) throw new Error('No file provided for upload');
+const uploadImage = async (uploadedFile) => {
+    if (!uploadedFile) throw new Error('No file received for processing');
 
-    const base64Image = Buffer.from(file.buffer).toString('base64');
-    const dataURI = `data:${file.mimetype};base64,${base64Image}`;
-
+    const encodedImage = Buffer.from(uploadedFile.buffer).toString('base64');
+    const imageDataURI = `data:${uploadedFile.mimetype};base64,${encodedImage}`;
+    
     try {
-        const uploadResponse = await cloudinary.uploader.upload(dataURI);
-        return uploadResponse.url;
-    } catch (error) {
-        console.error('Cloudinary upload error:', error);
-        throw new Error('Failed to upload image to Cloudinary');
-    }
+        const cloudResponse = await cloudinary.uploader.upload(imageDataURI);
+        return cloudResponse.url;
+    } catch (uploadError) {
+        console.error('Error uploading to Cloudinary:', uploadError);
+        throw new Error('Image upload to Cloudinary failed');
+    }    
 };
 
 exports.addDoctor = async (req, res) => {
@@ -39,27 +38,18 @@ exports.addDoctor = async (req, res) => {
 
 exports.deleteDoctor = async (req, res) => {
     try {
-        const id = parseInt(req.params.id);
-        await db.none('DELETE FROM doctors WHERE id = $1', [id]);
-        res.json({ message: 'Doctor deleted successfully' });
-    } catch (error) {
-        res.status(500).json({ message: 'Error deleting doctor', error: error.message });
-    }
+        const doctorId = parseInt(req.params.id);
+        await db.none('DELETE FROM doctors WHERE id = $1', [doctorId]);
+        res.json({ message: 'Doctor removed successfully' });
+    } catch (deleteDoctorError) {
+        res.status(500).json({ message: 'Error removing doctor', error: deleteDoctorError.message });
+    }    
 };
 
-exports.getDoctorById = async (req, res) => {
-    try {
-        const id = parseInt(req.params.id);
-        const doctor = await db.one('SELECT * FROM doctors WHERE id = $1', [id]);
-        res.json(doctor);
-    } catch (error) {
-        res.status(500).json({ message: 'Error fetching doctor', error: error.message });
-    }
-};
 
 exports.getAllDoctorsAdmin = async (req, res) => {
     try {
-        const doctors = await db.any(`
+        const doctorList= await db.any(`
             SELECT 
                 id AS doctor_id,
                 name AS doctor_name,
@@ -72,9 +62,9 @@ exports.getAllDoctorsAdmin = async (req, res) => {
             ORDER BY name`
         );
 
-        res.json({ ok: true, data: { rows: doctors } });
-    } catch (error) {
-        console.error("Error in getAllDoctorsAdmin:", error.message);
-        res.status(500).json({ ok: false, message: "Failed to fetch doctors", error: error.message });
-    }
+        res.json({ ok: true, data: { rows: doctorList } });
+} catch (fetchDoctorsError) {
+    console.error("Error retrieving doctor records:", fetchDoctorsError.message);
+    res.status(500).json({ success: false, message: "Unable to retrieve doctors", error: fetchDoctorsError.message });
+}
 };

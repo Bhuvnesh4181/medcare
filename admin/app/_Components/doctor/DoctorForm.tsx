@@ -1,32 +1,49 @@
-
 "use client";
 import { useState } from "react";
 import styles from "./DoctorForm.module.css";
 import { useRouter } from "next/navigation";
 
-export default function DoctorForm({ onDoctorAdded }: { onDoctorAdded: (doctor: any) => void }) {
+interface DoctorFormProps {
+  onDoctorAdded: (doctor: any) => void;
+}
+
+interface FormData {
+  name: string;
+  specialty: string;
+  experience: string;
+  rating: string;
+  location: string;
+  gender: string;
+}
+
+export default function DoctorForm({ onDoctorAdded }: DoctorFormProps) {
   const router = useRouter();
-  const [formData, setFormData] = useState({
+  
+  const [formData, setFormData] = useState<FormData>({
     name: "",
     specialty: "",
     experience: "",
     rating: "",
     location: "",
     gender: "male",
-    profile_pic: ""
   });
 
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  const [message, setMessage] = useState<{ type: "error" | "success"; text: string } | null>(null);
+
+  // Form fields array for dynamic rendering
+  const formFields = [
+    { label: "Doctor Name", name: "name", type: "text", required: true },
+    { label: "Specialty", name: "specialty", type: "text", required: true },
+    { label: "Experience (Years)", name: "experience", type: "number", required: true, min: 0 },
+    { label: "Rating", name: "rating", type: "number", min: 0, max: 5 },
+    { label: "Location", name: "location", type: "text", required: true },
+  ];
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -38,21 +55,15 @@ export default function DoctorForm({ onDoctorAdded }: { onDoctorAdded: (doctor: 
   const addDoctor = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError("");
-    setSuccess("");
+    setMessage(null);
 
     try {
-      if (!imageFile) {
-        throw new Error("Please select an image");
-      }
+      if (!imageFile) throw new Error("Please select an image");
 
       const formDataToSend = new FormData();
-      formDataToSend.append("name", formData.name);
-      formDataToSend.append("specialty", formData.specialty);
-      formDataToSend.append("experience", formData.experience);
-      formDataToSend.append("rating", formData.rating || "0");
-      formDataToSend.append("location", formData.location);
-      formDataToSend.append("gender", formData.gender);
+      Object.entries(formData).forEach(([key, value]) => {
+        formDataToSend.append(key, value.toString());
+      });
       formDataToSend.append("profile_pic", imageFile);
 
       const response = await fetch("http://localhost:3001/api/admin/doctors/create", {
@@ -61,27 +72,15 @@ export default function DoctorForm({ onDoctorAdded }: { onDoctorAdded: (doctor: 
         body: formDataToSend,
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to add doctor");
-      }
+      if (!response.ok) throw new Error("Failed to add doctor");
 
-      setSuccess("Doctor added successfully!");
-      setFormData({
-        name: "",
-        specialty: "",
-        experience: "",
-        rating: "",
-        location: "",
-        gender: "male",
-        profile_pic: ""
-      });
+      setMessage({ type: "success", text: "Doctor added successfully!" });
+      setFormData({ name: "", specialty: "", experience: "", rating: "", location: "", gender: "male" });
       setImageFile(null);
 
-      setTimeout(() => {
-        router.push("/list-doctors");
-      }, 2000);
+      setTimeout(() => router.push("/list-doctors"), 2000);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to add doctor");
+      setMessage({ type: "error", text: err instanceof Error ? err.message : "Failed to add doctor" });
     } finally {
       setLoading(false);
     }
@@ -90,43 +89,27 @@ export default function DoctorForm({ onDoctorAdded }: { onDoctorAdded: (doctor: 
   return (
     <div className={styles.container}>
       <h2>Add Doctor</h2>
-      {error && <div className={styles.error}>{error}</div>}
-      {success && <div className={styles.success}>{success}</div>}
+      {message && <div className={message.type === "error" ? styles.error : styles.success}>{message.text}</div>}
+      
       <form onSubmit={addDoctor} className={styles.form}>
-        <div className={styles.formGroup}>
-          <label htmlFor="name">Doctor Name</label>
-          <input type="text" id="name" name="name" value={formData.name} onChange={handleChange} required />
-        </div>
+        {formFields.map(({ label, name, type, ...rest }) => (
+          <div key={name} className={styles.formGroup}>
+            <label htmlFor={name}>{label}</label>
+            <input id={name} name={name} type={type} value={formData[name as keyof FormData]} onChange={handleChange} {...rest} />
+          </div>
+        ))}
 
-        <div className={styles.formGroup}>
-          <label htmlFor="specialty">Specialty</label>
-          <input type="text" id="specialty" name="specialty" value={formData.specialty} onChange={handleChange} required />
-        </div>
-
-        <div className={styles.formGroup}>
-          <label htmlFor="experience">Experience (Years)</label>
-          <input type="number" id="experience" name="experience" value={formData.experience} onChange={handleChange} required min="0" />
-        </div>
-
-        <div className={styles.formGroup}>
-          <label htmlFor="rating">Rating</label>
-          <input type="number" id="rating" name="rating" value={formData.rating} onChange={handleChange} min="0" max="5" />
-        </div>
-
-        <div className={styles.formGroup}>
-          <label htmlFor="location">Location</label>
-          <input type="text" id="location" name="location" value={formData.location} onChange={handleChange} required />
-        </div>
-
+        {/* Gender Selection */}
         <div className={styles.formGroup}>
           <label htmlFor="gender">Gender</label>
           <select id="gender" name="gender" value={formData.gender} onChange={handleChange}>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-            <option value="other">Other</option>
+            {["male", "female", "other"].map((option) => (
+              <option key={option} value={option}>{option.charAt(0).toUpperCase() + option.slice(1)}</option>
+            ))}
           </select>
         </div>
 
+        {/* File Upload */}
         <div className={styles.formGroup}>
           <label htmlFor="profile_pic">Doctor Photo</label>
           <input type="file" id="profile_pic" name="profile_pic" accept="image/*" onChange={handleFileChange} required />
