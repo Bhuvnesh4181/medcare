@@ -41,10 +41,8 @@ authRouter.post("/register", async (request, response) => {
             [name, email, encryptedPassword]
         );
 
-        request.login(createdUser, (err) => {
-            if (err) return handleRequestError(response, "User created but auto-login failed", err, 201);
-            return response.status(201).json({ ok: true, message: "User created and logged in", user: createdUser });
-        });
+        return response.status(201).json({ ok: true, message: "User created successfully. Please log in.", user: createdUser });
+
 
     } catch (error) {
         return handleRequestError(response, "Registration failed", error);
